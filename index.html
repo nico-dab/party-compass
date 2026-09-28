@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a20">
+  <meta name="description" content="Plan a D&D 2024 character around your party, compare classes and subclasses, and keep your next adventure in focus.">
+  <meta name="apple-mobile-web-app-title" content="Party Compass">
+  <title>Party Compass — Find your place in the story</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.mjs"></script>
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#party" aria-label="Party Compass home"><span aria-hidden="true">✦</span> PARTY <strong>COMPASS</strong></a>
+    <span class="header-caption">A little clarity for your next adventure.</span>
+    <a class="source-link" href="#sources">Sources ↗</a>
+  </header>
+
+  <main>
+    <nav class="steps" aria-label="Character planning steps">
+      <button type="button" data-screen="party"><span>01</span> The party</button>
+      <button type="button" data-screen="classes"><span>02</span> Your class</button>
+      <button type="button" data-screen="path"><span>03</span> Your path</button>
+    </nav>
+
+    <section id="screen-party" class="screen" aria-labelledby="party-title">
+      <div class="screen-heading"><div><span class="kicker">FIRST, THE COMPANY</span><h1 id="party-title">Who’s at the <em>table?</em></h1><p>Start with what you know. You can change every choice later.</p></div><div class="heading-symbol" aria-hidden="true">✧</div></div>
+      <div class="party-layout">
+        <div class="panel form-panel">
+          <div class="setup-row"><label>Party size <input id="party-size" type="number" min="2" max="8" step="1" inputmode="numeric"></label><label>Current level <input id="party-level" type="number" min="1" max="20" step="1" inputmode="numeric"></label></div>
+          <div id="party-members" class="party-members"></div>
+          <div class="panel-footer"><label for="priority">What sounds fun to you?</label><select id="priority"><option value="monk">I want to try Monk</option><option value="support">Helping the team</option><option value="magic">Exploring magic</option><option value="control">Outsmarting enemies</option><option value="open">I’m open to anything</option></select></div>
+        </div>
+        <aside class="panel side-note"><span class="kicker">BOOKS AT YOUR TABLE</span><h2>What’s allowed?</h2><p>Core 2024 choices are always shown. Expansion options appear when checked here.</p><div id="book-toggles" class="book-toggles"></div><div class="aside-divider"></div><span class="kicker">HOW THIS WORKS</span><p>Uncertain teammates can have several possible classes. The advisor compares those futures separately.</p><a href="https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Explore the 2024 class guide ↗</a></aside>
+      </div>
+      <div class="screen-actions"><span id="party-save-note" class="save-note">Saved on this device</span><button id="party-next" class="primary-button" type="button">See my options <span aria-hidden="true">↗</span></button></div>
+    </section>
+
+    <section id="screen-classes" class="screen" aria-labelledby="classes-title" hidden>
+      <div class="screen-heading"><div><span class="kicker">YOUR PLACE IN THE STORY</span><h1 id="classes-title">Choose a <em>class.</em></h1><p>Start with a suggestion or follow your curiosity. Every class has a path forward.</p></div></div>
+      <div class="advisor-banner"><span class="advisor-star" aria-hidden="true">✦</span><div><span class="kicker">PARTY READOUT</span><p id="advisor-summary" aria-live="polite"></p></div></div>
+      <div id="scenario-list" class="scenario-list"></div>
+      <div class="list-heading"><div><span class="kicker">A GOOD PLACE TO START</span><h2>Suggested for your party</h2></div><button class="text-button" id="edit-party" type="button">Edit party ↖</button></div>
+      <div id="suggested-grid" class="class-grid"></div>
+      <div class="browse-heading"><button id="browse-all" type="button" class="outline-button" aria-expanded="false">Browse every class <span aria-hidden="true">＋</span></button></div>
+      <div id="all-classes" hidden><label class="search-label">Search classes <input id="class-search" type="search" placeholder="Name or play style"></label><div id="class-grid" class="class-grid all-grid"></div></div>
+    </section>
+
+    <section id="screen-path" class="screen" aria-labelledby="path-title" hidden>
+      <div class="screen-heading path-heading"><div><span class="kicker">MAKE IT YOURS</span><h1 id="path-title">Choose your <em>path.</em></h1><p id="path-subtitle"></p></div><button id="change-class" type="button" class="text-button">Change class ↖</button></div>
+      <div id="class-fit" class="advisor-banner"></div>
+      <div class="path-layout">
+        <nav class="path-picker" aria-label="Choose a subclass">
+          <div class="list-heading"><div><span class="kicker">COMPARE YOUR OPTIONS</span><h2>Subclasses</h2></div></div>
+          <label class="mobile-path-label" for="subclass-select">Read about a subclass<select id="subclass-select"></select></label>
+          <div id="subclass-grid" class="subclass-grid"></div>
+        </nav>
+        <article class="panel path-detail" aria-labelledby="selected-path-title"><div id="selected-path"></div></article>
+      </div>
+      <p id="path-announcement" class="sr-only" role="status"></p>
+      <div class="panel goal-panel"><label for="goal">Campaign goal or next-session reminder</label><textarea id="goal" maxlength="500" rows="3" placeholder="What does your character want? What should you remember next session?"></textarea><span class="save-note">Saved on this device</span></div>
+    </section>
+
+    <section class="sources" id="sources"><span class="kicker">SOURCES & SCOPE</span><h2>Your DM has the final word.</h2><p>Party Compass offers original, rules-based suggestions for the 2024 rules. Strategies are ideas, not copied rule text. Expansion options need your DM’s approval. Your choices stay on this device; there is no account, AI service, or subscription.</p><div class="source-links"><a href="https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Classes & subclasses ↗</a><a href="https://dungeonmister.com/guides/races-and-species-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Species ↗</a><a href="https://www.dndbeyond.com/sources/dnd/br-2024/character-classes" target="_blank" rel="noopener noreferrer">Free 2024 class rules ↗</a></div></section>
+  </main>
+  <footer><span>✦ PARTY COMPASS</span><span>For the story ahead.</span></footer>
+</body>
+</html>
