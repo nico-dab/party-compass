@@ -1,5 +1,5 @@
-const CACHE = 'party-compass-v18';
-const FILES = ['./', './index.html', './styles.css', './app.mjs', './catalog.mjs', './advisor.mjs', './progression.mjs', './class-progression.mjs', './strategy.mjs', './spell-glossary.mjs', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE = 'party-compass-v20';
+const FILES = ['./', './index.html', './styles.css', './app.mjs', './catalog.mjs', './advisor.mjs', './progression.mjs', './class-progression.mjs', './strategy.mjs', './spell-glossary.mjs', './reference-catalog.mjs', './reference-equipment.mjs', './reference-creatures.mjs', './reference-feats.mjs', './reference-spell-notes.mjs', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));

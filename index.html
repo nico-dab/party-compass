@@ -26,6 +26,7 @@
       <button type="button" data-screen="party"><span>01</span> The party</button>
       <button type="button" data-screen="classes"><span>02</span> Your class</button>
       <button type="button" data-screen="path"><span>03</span> Your path</button>
+      <button type="button" data-screen="reference"><span>04</span> Reference</button>
     </nav>
 
     <section id="screen-party" class="screen" aria-labelledby="party-title">
@@ -71,10 +72,22 @@
       <div class="panel goal-panel"><label for="goal">Campaign goal or next-session reminder</label><textarea id="goal" maxlength="500" rows="3" placeholder="What does your character want? What should you remember next session?"></textarea><span class="save-note">Saved on this device</span></div>
     </section>
 
+    <section id="screen-reference" class="screen" aria-labelledby="reference-title" hidden>
+      <div class="screen-heading"><div><span class="kicker">THE TABLE LIBRARY</span><h1 id="reference-title">Find a <em>rule.</em></h1><p>Search spell options, feats, skills, equipment, armor, weapons, and creatures in one place. This starter library works offline.</p></div></div>
+      <div class="panel reference-panel">
+        <label class="search-label" for="reference-search">Search the library<input id="reference-search" type="search" placeholder="Try Fireball, Plate Armor, Stealth, Goblin…" autocomplete="off"></label>
+        <div id="reference-categories" class="reference-categories" role="group" aria-label="Filter reference category"></div>
+        <p id="reference-count" class="section-note" aria-live="polite">Search by name, effect, or category.</p>
+        <div id="reference-results" class="reference-results"></div>
+      </div>
+      <p class="source-policy">Spell options follow the books selected on the party screen. Feats reflect current planner suggestions; equipment and creature entries are a sourced starter index, not a complete rules compendium.</p>
+    </section>
+
     <section class="sources" id="sources"><span class="kicker">SOURCES & SCOPE</span><h2>Your DM has the final word.</h2><p>Party Compass offers original, rules-based suggestions for the 2024 rules. Strategies are ideas, not copied rule text. Expansion options need your DM’s approval. Your choices stay on this device; there is no account, AI service, or subscription.</p><div class="source-links"><a href="https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Classes & subclasses ↗</a><a href="https://dungeonmister.com/guides/races-and-species-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Species ↗</a><a href="https://www.dndbeyond.com/sources/dnd/br-2024/character-classes" target="_blank" rel="noopener noreferrer">Free 2024 class rules ↗</a></div></section>
     <p class="source-policy">Dungeon Mister is our primary guide when references disagree. Official 2024 rules and edition-checked Wikidot pages fill gaps. <a href="https://rpgbot.net/2024-dnd/2024-dnd-meta/" target="_blank" rel="noopener noreferrer">RPGBOT</a> offers another perspective on build strategy. <a href="https://dnd5e.wikidot.com/" target="_blank" rel="noopener noreferrer">Legacy Wikidot</a> includes older rules; check the edition before using it.</p>
     <p class="source-policy">Dungeon Mister is our primary guide when sources disagree. Official 2024 rules and edition-checked Wikidot pages fill gaps. <a href="https://rpgbot.net/2024-dnd/2024-dnd-meta/" target="_blank" rel="noopener noreferrer">RPGBOT</a> offers another perspective on build strategy. <a href="https://dnd5e.wikidot.com/" target="_blank" rel="noopener noreferrer">Legacy Wikidot</a> includes older rules; check the edition before using it.</p>
   </main>
+  <dialog id="spell-dialog" class="spell-dialog" aria-labelledby="spell-dialog-title"></dialog>
   <footer><span>✦ PARTY COMPASS</span><span>For the story ahead.</span></footer>
 </body>
 </html>

@@ -6,13 +6,13 @@ A free, rules-based D&D 2024 party and character planner. Enter the party, compa
 
 ## Run and check
 
-From this directory, run `python -m http.server 8765 --bind 127.0.0.1` and open `http://127.0.0.1:8765/`. Run `node test.mjs` for the recommendation checks and `node audit-catalog.mjs` to compare every subclass and book label with the live Dungeon Mister index. The audit needs internet access; the app does not. Serve over HTTP or HTTPS because the app uses JavaScript modules and a service worker. On Nico's Codex shell, prefix shell commands with `rtk` as directed by `C:\Users\Nico\.codex\RTK.md`.
+From this directory, run `python -m http.server 8765 --bind 127.0.0.1` and open `http://127.0.0.1:8765/`. Run `node test.mjs` for recommendation checks, `node reference-check.mjs` for offline reference coverage and values, and `node audit-catalog.mjs` to compare every subclass and book label with the live Dungeon Mister index. The audit needs internet access; the app does not. Serve over HTTP or HTTPS because the app uses JavaScript modules and a service worker. On Nico's Codex shell, prefix shell commands with `rtk` as directed by `C:\Users\Nico\.codex\RTK.md`.
 
 ## Where things live
 
 - `catalog.mjs`: 2024 class/subclass names, original summaries, sourcebook labels, and capability tags. `audit-catalog.mjs` checks the live index against it.
 - `advisor.mjs`: deterministic party scenarios, role coverage, and class/subclass ranking. It is importable in Node without a browser.
-- `app.mjs`, `index.html`, `styles.css`: saved state and the three focused screens.
+- `app.mjs`, `index.html`, `styles.css`: saved state, planning screens, and offline reference search.
 - `manifest.webmanifest`, `sw.js`, `icon.svg`: installable web-app shell and offline file cache. Increase the cache name in `sw.js` when releasing changed files.
 - `AGENTS.md`: short instructions for coding agents. `STEP_2_PLAN.md`: scope, acceptance checks, and deferred native distribution plan.
 
@@ -24,7 +24,7 @@ Class cards open a shared level 1–20 reference before subclass selection. The 
 
 The party landing page opens with Nico marked as You and each member's class and subclass editable in place. **Make mine** switches the active player. Player identity and roster choices are saved on this device; they are not synced between devices.
 
-`class-progression.mjs` contains the shared class reference; `strategy.mjs` and `spell-glossary.mjs` contain the play companion and spell explanations. `CLASS_SOURCES.md`, `SUBCLASS_SOURCES.md`, `SPELL_SOURCES.md`, and `STRATEGY_SOURCES.md` document provenance and gaps. Dungeon Mister takes priority over conflicting references. Official 2024 rules supplement class data, edition-checked Wikidot pages supply secondary mechanics, and RPGBOT supplies strategy context. The app is a planning aid, not a complete rules database.
+`class-progression.mjs` contains the shared class reference; `strategy.mjs` and `spell-glossary.mjs` contain the play companion and spell explanations. The Reference screen searches class spell options, feats, all 18 skills, and a sourced starter set of equipment and creatures. It shows useful rules and statistics offline; source links are optional. Spell names open an on-page popup with metadata and a short effect summary. College of Lore's Magical Discoveries links directly to its three spell lists. `reference-catalog.mjs`, `reference-equipment.mjs`, `reference-creatures.mjs`, and the spell and feat reference modules hold this data. `CLASS_SOURCES.md`, `SUBCLASS_SOURCES.md`, `SPELL_SOURCES.md`, and `STRATEGY_SOURCES.md` document provenance and gaps. Dungeon Mister takes priority over conflicting references. Official 2024 rules supplement class data, edition-checked Wikidot pages supply secondary mechanics, and RPGBOT supplies strategy context. The app is a planning aid, not a complete rules database.
 
 The catalog matches all 76 subclasses on the [Dungeon Mister 2024 class index](https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/) as checked on 2026-09-27, plus the [species index](https://dungeonmister.com/guides/races-and-species-in-dnd-2024/). The index abbreviates Arcana Unleashed as **AU** and Forgotten Realms: Heroes of Faerûn as **HoF**; AU does not mean Unearthed Arcana. The [D&D Beyond 2024 Free Rules](https://www.dndbeyond.com/sources/dnd/br-2024/character-classes) support common class milestones. Expansion choices are labeled and controlled by book toggles. Strategy text is original guidance; follow the linked source for exact feature text and timing. The DM decides which books are allowed.
 

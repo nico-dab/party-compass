@@ -294,11 +294,7 @@ footer span:first-child { color: #d0b379; }
 .level-plan p { margin: 7px 0 0; color: #c4d1c6; font-size: 15px; line-height: 1.7; }
 .spell-plan .spell-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
 .spell-tip { display: inline-block; max-width: 100%; padding: 0; color: #e5d3ab; background: #263a39; border: 1px solid #76917e66; border-radius: 8px; font-size: 13px; }
-.spell-tip summary { padding: 10px 12px; list-style: none; cursor: pointer; }
-.spell-tip summary::-webkit-details-marker { display: none; }
-.spell-tip summary:hover { color: #fff; }
 summary:focus-visible { outline: 2px solid #e4c489; outline-offset: 2px; }
-.spell-tip[open] { border-color: #e4c489; }
 .spell-description { display: block; max-width: 280px; padding: 0 12px 12px; color: #eef1e6; font-size: 13px; line-height: 1.6; }
 .compare-subclasses { margin-top: 16px; border-top: 1px solid #76907e3e; }
 .compare-subclasses > div { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -333,7 +329,35 @@ summary:focus-visible { outline: 2px solid #e4c489; outline-offset: 2px; }
 .source-policy { color: #a5b9aa; font-size: 12px; line-height: 1.7; margin: -32px 0 40px; max-width: 780px; }
 .source-policy a { color: #e4c489; }
 .companion-jump { display: none; }
-.spell-tip[open] { flex-basis: 100%; }
+.reference-panel { padding: 28px; }
+.reference-panel .search-label { display: grid; gap: 9px; max-width: 620px; color: #d9b77b; font-size: 13px; }
+.reference-panel input { width: 100%; padding: 15px; color: #f0e8d5; background: #1b292f; border: 1px solid #76907e88; border-radius: 8px; }
+.reference-categories { display: flex; flex-wrap: wrap; gap: 9px; margin: 20px 0 12px; }
+.reference-filter { padding: 9px 14px; color: #c4d1c6; background: #17262a; border: 1px solid #76907e66; border-radius: 99px; }
+.reference-filter.active { color: #101a20; background: #d9b77b; border-color: #d9b77b; }
+.reference-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 16px; }
+.reference-result { min-width: 0; padding: 17px; background: #142329; border: 1px solid #76907e3e; border-radius: 10px; }
+.reference-result, .reference-result .spell-description { overflow-wrap: anywhere; }
+.reference-result .spell-tip { min-width: 0; max-width: 100%; }
+.reference-result .spell-description { max-width: 100%; }
+.spell-tip { padding: 10px 12px; text-align: left; overflow-wrap: anywhere; }
+.spell-tip:hover, .spell-tip:focus-visible { color: #fff; border-color: #e4c489; }
+.spell-dialog { width: min(560px, calc(100vw - 28px)); max-height: min(80vh, 720px); padding: 28px; color: #eef1e6; background: #1b292f; border: 1px solid #d9b77b; border-radius: 12px; box-shadow: 0 20px 70px #000a; overflow: auto; }
+.spell-dialog::backdrop { background: #071014bb; }
+.spell-dialog h2 { margin: 10px 30px 18px 0; font-size: 34px; overflow-wrap: anywhere; }
+.spell-dialog p { color: #d5e0d5; line-height: 1.7; }
+.spell-dialog a { color: #e4c489; }
+.dialog-close { float: right; padding: 4px 10px; color: #e4c489; background: transparent; border: 0; font-size: 28px; }
+.reference-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin: 0 0 20px; }
+.reference-facts div { padding: 10px; background: #14262b; border: 1px solid #76907e44; border-radius: 7px; min-width: 0; }
+.reference-facts dt { color: #bba479; font-size: 11px; }
+.reference-facts dd { margin: 5px 0 0; overflow-wrap: anywhere; font-size: 14px; }
+#lore-spell-choices { scroll-margin-top: 20px; }
+.reference-result h3 { margin: 8px 0; font-size: 22px; }
+.reference-result p { margin: 0 0 10px; color: #c4d1c6; font-size: 13px; line-height: 1.6; }
+.reference-result a { color: #e4c489; font-size: 12px; }
+.reference-result .spell-list { margin-top: 10px; }
+@media (max-width: 500px) { .reference-panel { padding: 18px; } .reference-results { grid-template-columns: 1fr; } }
 @media (max-width: 740px) {
   .path-picker .subclass-grid { display: none; }
   .companion-jump { display: block; margin-top: 14px; }

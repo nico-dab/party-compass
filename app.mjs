@@ -4,11 +4,17 @@ import {clericSpellPlan, detailsFor, expansionChoices, featNotes, spellNotes, sp
 import {classProgression, classSpellDetails} from './class-progression.mjs';
 import {strategyFor} from './strategy.mjs';
 import {spellGlossary} from './spell-glossary.mjs';
+import {skills} from './reference-catalog.mjs';
+import {referenceEquipment} from './reference-equipment.mjs';
+import {referenceCreatures} from './reference-creatures.mjs';
+import {referenceFeats} from './reference-feats.mjs';
+import {spellReference} from './reference-spell-notes.mjs';
 
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const spellKey = name => String(name).normalize('NFKC').replace(/[’‘]/g,"'").trim().toLocaleLowerCase();
-const spellNotesByKey = new Map([...Object.entries(spellNotes),...Object.entries(spellGlossary)].map(([name,note]) => [spellKey(name),note]));
+const spellReferenceByKey = new Map(Object.entries(spellReference).map(([name,note]) => [spellKey(name),note]));
+const spellNotesByKey = new Map([...Object.entries(spellNotes),...Object.entries(spellGlossary),...Object.entries(spellReference).map(([name,note])=>[name,note.summary])].map(([name,note]) => [spellKey(name),note]));
 const spellDetailsByKey = new Map(Object.entries(classSpellDetails).map(([name,detail]) => [spellKey(name),detail]));
 const spellBookFor = name => spellDetailsByKey.get(spellKey(name))?.book || 'PHB';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || min));
@@ -141,11 +147,55 @@ function renderClasses() {
 function spellList(names) {
   return `<div class="spell-list">${names.map(name => {
     const detail = spellDetailsByKey.get(spellKey(name));
-    const metadata = detail ? [detail.rank === 0 ? 'Cantrip' : `Level ${detail.rank} spell`, detail.school, detail.concentration ? 'Concentration' : '', detail.ritual ? 'Ritual' : '', detail.book && detail.book !== 'PHB' ? `Expansion: ${detail.bookLabel || detail.book}` : ''].filter(Boolean).join(' · ') : '';
     const bookTag = detail?.book && detail.book !== 'PHB' ? `<small class="spell-book">${escapeHtml({'Arcana Unleashed':'AU','Heroes of Faerun':'HoF'}[detail.book] || detail.book)}</small>` : '';
-    const explanation = spellNotesByKey.get(spellKey(name)) || detail?.summary || 'See the spell rules for its full effect.';
-    return `<details class="spell-tip" data-spell-name="${escapeHtml(name)}"><summary>${escapeHtml(name)}${bookTag}</summary><span class="spell-description">${metadata ? `<span class="spell-metadata">${escapeHtml(metadata)}</span>` : ''}${escapeHtml(explanation)} ${detail?.source ? `<a href="${escapeHtml(detail.source)}" target="_blank" rel="noopener noreferrer">Spell rules ↗</a>` : ''}</span></details>`;
+    return `<button type="button" class="spell-tip" data-spell-name="${escapeHtml(name)}" aria-haspopup="dialog">${escapeHtml(name)}${bookTag}</button>`;
   }).join('')}</div>`;
+}
+
+function showSpell(name) {
+  const detail=spellDetailsByKey.get(spellKey(name));
+  const extra=spellReferenceByKey.get(spellKey(name));
+  const summary=spellNotesByKey.get(spellKey(name)) || detail?.summary || 'Effect summary is still being checked. Use the linked rules for the exact effect.';
+  const facts=[['Level',detail?.rank===0?'Cantrip':detail?.rank!=null?String(detail.rank):'—'],['School',detail?.school],['Casting time',extra?.castingTime],['Range',extra?.range],['Components',extra?.components],['Duration',extra?.duration],['Concentration',detail?.concentration?'Yes':'No'],['Ritual',detail?.ritual?'Yes':'No'],['Sourcebook',detail?.bookLabel || detail?.book]];
+  const dialog=$('spell-dialog');
+  dialog.innerHTML=`<button type="button" class="dialog-close" data-close-spell aria-label="Close spell details">×</button><span class="kicker">SPELL LOOKUP</span><h2 id="spell-dialog-title">${escapeHtml(name)}</h2><dl class="reference-facts">${facts.filter(([,value])=>value).map(([label,value])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl><p>${escapeHtml(summary)}</p>${detail?.source?`<a href="${escapeHtml(detail.source)}" target="_blank" rel="noopener noreferrer">Full spell rules ↗</a>`:''}`;
+  dialog.showModal();
+}
+
+function classSpellChoices(classNames, maxRank) {
+  return classNames.map(className => {
+    const rows = (classProgression[className]?.spellList || []).filter(row => row.rank <= maxRank)
+      .map(row => ({...row,names:row.names.filter(name => state.books.includes(spellBookFor(name)))})).filter(row => row.names.length);
+    return rows.length ? `<details class="class-spell-ideas"><summary>${escapeHtml(className)} spell list · ${rows.reduce((count,row)=>count+row.names.length,0)} choices</summary><p class="section-note">Choose a spell level your character can cast. These are options, not automatic grants.</p>${rows.map(row=>`<details class="class-spell-ideas"><summary>${row.rank===0?'Cantrips':`Level ${row.rank}`} · ${row.names.length}</summary>${spellList(row.names)}</details>`).join('')}</details>` : '';
+  }).join('');
+}
+
+function referenceEntries() {
+  const spells = new Map();
+  const addSpell = name => { const key=spellKey(name); if (!spells.has(key)) spells.set(key,name); };
+  for (const data of Object.values(classProgression)) for (const row of data.spellList || []) row.names.forEach(addSpell);
+  for (const notes of Object.values(subclassSpells)) for (const [,names] of notes) names.forEach(addSpell);
+  for (const name of spellNotesByKey.keys()) if (spellDetailsByKey.has(name)) addSpell(name);
+  const spellItems = [...spells.values()].filter(name=>state.books.includes(spellBookFor(name))).map(name=>{
+    const detail=spellDetailsByKey.get(spellKey(name));
+    const summary=spellNotesByKey.get(spellKey(name)) || detail?.summary || `${detail?.rank===0?'Cantrip':`Level ${detail?.rank ?? '?'} spell`}${detail?.school?` · ${detail.school}`:''}. Open the linked spell rules for its full effect.`;
+    return {name,category:'Spells',summary,detail,source:detail?.source};
+  });
+  return [...spellItems,...referenceFeats,...skills.map(item=>({...item,facts:[['Ability',item.ability]]})),...referenceEquipment.map(item=>({...item,kind:item.category,category:'Equipment'})),...referenceCreatures];
+}
+
+let referenceCategory='All';
+function renderReference() {
+  const entries=referenceEntries();
+  const categories=['All','Spells','Feats','Skills','Equipment','Creatures'];
+  $('reference-categories').innerHTML=categories.map(category=>`<button type="button" class="reference-filter ${referenceCategory===category?'active':''}" data-reference-category="${category}" aria-pressed="${referenceCategory===category}">${category}</button>`).join('');
+  const query=$('reference-search').value.trim().toLocaleLowerCase();
+  const matches=!query&&referenceCategory==='All'?[]:entries.filter(item=>(referenceCategory==='All'||item.category===referenceCategory) && (!query||`${item.name} ${(item.aliases||[]).join(' ')} ${item.summary} ${item.category} ${item.kind||''} ${item.ability||''} ${item.detail?.school||''}`.toLocaleLowerCase().includes(query)));
+  $('reference-count').textContent=query ? `${matches.length} ${matches.length===1?'match':'matches'}${referenceCategory==='All'?'':' in '+referenceCategory}.` : 'Type to search. Choose a category to browse its entries.';
+  $('reference-results').innerHTML=matches.length ? matches.slice(0,80).map(item=>item.category==='Spells'
+    ? `<article class="reference-result"><span class="kicker">${item.detail?.rank===0?'CANTRIP':`LEVEL ${item.detail?.rank ?? '?'} SPELL`}${item.detail?.school?` · ${escapeHtml(item.detail.school)}`:''}</span>${spellList([item.name])}<p>${escapeHtml(item.summary)}</p></article>`
+    : `<article class="reference-result"><span class="kicker">${escapeHtml(item.kind||item.category)}</span><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.summary)}</p>${item.facts?.length?`<dl class="reference-facts">${item.facts.map(([label,value])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>`:''}${item.source?`<a href="${escapeHtml(item.source)}" target="_blank" rel="noopener noreferrer">Full rules ↗</a>`:''}</article>`).join('') : query||referenceCategory!=='All' ? '<p class="section-note">No matches. Try a shorter name or another category.</p>' : '<p class="section-note">Start typing to search everything, or choose a category to browse.</p>';
+  if(matches.length>80) $('reference-count').textContent+=` Showing 80 of ${matches.length}; refine your search.`;
 }
 
 function spellRows(rows, label) {
@@ -181,7 +231,7 @@ function renderClassReference() {
     <div class="class-actions"><button type="button" class="primary-button" data-open-path>Explore ${escapeHtml(c.name)} subclasses →</button><button type="button" class="text-button companion-jump" data-companion="class-companion">Play suggestions ↓</button></div></header>
     <section class="path-section"><span class="kicker">LEVELS 1–20</span><h3>Your class, at every level</h3><p class="section-note">Gold markers are available at your level (${state.level}). Open a feature for a short explanation. Spell slots allow choices from your class spell list; they do not grant named spells.</p>
     <ol class="level-plan class-levels">${data.levels.map(row => `<li class="${row.level <= state.level ? 'reached' : ''}" ${row.level === state.level ? 'aria-current="step"' : ''}><span class="plan-level">${row.level}</span><div><span class="feature-status">LEVEL ${row.level}${row.level === state.level ? ' · YOU ARE HERE' : ''}</span>
-      ${row.features.length ? row.features.map(feature => `<details class="feature-tip"><summary>${escapeHtml(feature.name)}</summary><p>${escapeHtml(feature.description)}</p></details>`).join('') : '<p class="section-note">Your existing class features continue. Check Your path for subclass gains at this level.</p>'}
+      ${row.features.length ? row.features.map(feature => `<details class="feature-tip"><summary>${escapeHtml(feature.name)}</summary><p>${escapeHtml(feature.description)}</p>${c.name==='Bard'&&feature.name==='Magical Secrets'?`<p class="section-note">Explore the shared spell lists:</p>${classSpellChoices(['Bard','Cleric','Druid','Wizard'],5)}`:''}</details>`).join('') : '<p class="section-note">Your existing class features continue. Check Your path for subclass gains at this level.</p>'}
       ${row.spellcasting ? `<p class="spell-progression">${escapeHtml(row.spellcasting)}</p>` : ''}
       ${row.resources ? `<p class="resource-progression">${escapeHtml(row.resources)}</p>` : ''}
       ${row.grantedSpells?.length ? `<p class="section-note">Class-feature spell access · the feature above explains any conditions.</p>${spellList(row.grantedSpells)}` : ''}
@@ -216,8 +266,8 @@ function renderPath() {
     <div class="path-meta"><span>${chosen ? '✓ Saved as your path' : 'Preview · choose to save'}</span><a class="source" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">Subclass guide ↗</a>${subclassSecondarySources[sub[0]] ? `<a class="source" href="${escapeHtml(subclassSecondarySources[sub[0]])}" target="_blank" rel="noopener noreferrer">2024 rules cross-check ↗</a>` : ''}</div>
     ${chosen ? '' : `<button type="button" class="outline-button save-path" data-save-subclass="${escapeHtml(sub[0])}">Choose this path</button>`}<button type="button" class="text-button companion-jump" data-companion="path-companion">Play suggestions ↓</button></header>
     <section class="path-section"><span class="kicker">WHAT THIS PATH ADDS</span><h3>Your subclass features</h3><p class="section-note">Subclass-specific abilities and choices, in addition to your class features. Some spells or proficiencies are also available to other paths; they are not necessarily exclusive.</p>
-    <ol class="level-plan">${milestones.map(([level,name,description]) => `<li class="${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><span class="feature-status">LEVEL ${level} · ${level <= state.level ? 'AVAILABLE' : 'AHEAD'}</span><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p></div></li>`).join('')}</ol></section>
-    ${grants.length || alternatives.length || spellcasting || subclassSpellNotes[sub[0]] ? `<section class="path-section"><span class="kicker">YOUR PATH’S MAGIC</span><h3>Subclass spells & choices</h3><p class="section-note">${escapeHtml(subclassSpellNotes[sub[0]] || 'Spells added by this subclass at each class level. Follow its guide for preparation and casting conditions.')}${grants.length || alternatives.length ? ' Select a spell for its summary.' : ''}</p>${spellcasting ? `<p>${escapeHtml(spellcasting)}</p>` : ''}${spellRows(grants,'Subclass spells')}${alternatives.map(list => `<details class="advice-extra"><summary>${escapeHtml(list.name)}</summary>${spellRows(list.rows,'Choice of spell list')}</details>`).join('')}</section>` : ''}
+    <ol class="level-plan">${milestones.map(([level,name,description]) => `<li class="${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><span class="feature-status">LEVEL ${level} · ${level <= state.level ? 'AVAILABLE' : 'AHEAD'}</span><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p>${sub[0]==='College of Lore'&&name==='Magical Discoveries'?'<button type="button" class="text-button" data-open-spell-choices="lore-spell-choices">Browse the two-spell choices ↓</button>':''}</div></li>`).join('')}</ol></section>
+    ${grants.length || alternatives.length || spellcasting || subclassSpellNotes[sub[0]] ? `<section class="path-section"><span class="kicker">YOUR PATH’S MAGIC</span><h3>Subclass spells & choices</h3><p class="section-note">${escapeHtml(subclassSpellNotes[sub[0]] || 'Spells added by this subclass at each class level. Follow its guide for preparation and casting conditions.')}${grants.length || alternatives.length ? ' Select a spell for its summary.' : ''}</p>${spellcasting ? `<p>${escapeHtml(spellcasting)}</p>` : ''}${sub[0]==='College of Lore'?`<details id="lore-spell-choices" class="advice-extra"><summary>Magical Discoveries · pick two spells</summary><p class="section-note">At Bard level 6, choose from the Cleric, Druid, or Wizard lists up to spell level 3.</p>${classSpellChoices(['Cleric','Druid','Wizard'],3)}</details>`:''}${spellRows(grants,'Subclass spells')}${alternatives.map(list => `<details class="advice-extra"><summary>${escapeHtml(list.name)}</summary>${spellRows(list.rows,'Choice of spell list')}</details>`).join('')}</section>` : ''}
     ${castingMarkup}${compare}<p class="section-note">Planning summaries, not a complete character sheet. Shared feats, spell progression, and class features are in the class reference.</p><button type="button" class="outline-button" data-class-reference>Back to ${escapeHtml(c.name)} foundation</button>`;
   renderCompanion('path-companion', c, sub);
   $('goal').value = state.goal;
@@ -225,11 +275,11 @@ function renderPath() {
 
 function screenFromHash() {
   const hash = location.hash.slice(1);
-  return ['party','classes','path'].includes(hash) && (hash !== 'path' || state.selectedClass) ? hash : 'party';
+  return ['party','classes','path','reference'].includes(hash) && (hash !== 'path' || state.selectedClass) ? hash : 'party';
 }
 function renderScreen() {
   const screen = screenFromHash();
-  for (const name of ['party','classes','path']) {
+  for (const name of ['party','classes','path','reference']) {
     $(`screen-${name}`).hidden = name !== screen;
     const button = document.querySelector(`.steps [data-screen="${name}"]`);
     button.classList.toggle('active',name===screen);
@@ -238,6 +288,7 @@ function renderScreen() {
   }
   if (screen === 'classes') renderClasses();
   if (screen === 'path') renderPath();
+  if (screen === 'reference') renderReference();
   window.scrollTo({top:0,behavior:'instant'});
 }
 const go = screen => {if (location.hash !== `#${screen}`) history.pushState(null,'',`#${screen}`); if (screen === 'party') renderMembers(); renderScreen();};
@@ -296,6 +347,8 @@ $('change-class').addEventListener('click',()=>go('classes'));
 document.querySelector('.steps').addEventListener('click',event=>{const button=event.target.closest('[data-screen]');if(button&&!button.disabled)go(button.dataset.screen);});
 $('browse-all').addEventListener('click',()=>{state.browseAll=!state.browseAll;renderClasses();});
 $('class-search').addEventListener('input',event=>{state.search=event.target.value;renderClasses();});
+$('reference-search').addEventListener('input',renderReference);
+$('reference-categories').addEventListener('click',event=>{const button=event.target.closest('[data-reference-category]');if(button){referenceCategory=button.dataset.referenceCategory;renderReference();}});
 for (const id of ['suggested-grid','class-grid']) $(id).addEventListener('click',event=>{
   const button=event.target.closest('[data-class]');
   if(!button)return;
@@ -331,6 +384,11 @@ $('selected-path').addEventListener('click',event=>{
   $('selected-path-title').focus({preventScroll:true});
 });
 document.addEventListener('click', event => {
+  const spell=event.target.closest('[data-spell-name]');
+  if (spell) {showSpell(spell.dataset.spellName);return;}
+  if (event.target.closest('[data-close-spell]')) $('spell-dialog').close();
+  const choicesButton=event.target.closest('[data-open-spell-choices]');
+  if (choicesButton) {const choices=$(choicesButton.dataset.openSpellChoices);if(choices){choices.open=true;choices.scrollIntoView({block:'start',behavior:'smooth'});choices.querySelector('summary').focus({preventScroll:true});}}
   const companion = event.target.closest('[data-companion]');
   if (companion) {$(companion.dataset.companion).querySelector('h2').focus();}
   if (event.target.closest('[data-open-path]')) go('path');
