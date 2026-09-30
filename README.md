@@ -20,6 +20,8 @@ The app uses browser `localStorage`; each device has its own data. A native app 
 
 ## Rules and sources
 
+The class screen marks choosing a subclass as the next step. Class basics, subclass features, play advice, and Reference results open one offline rules dialog for known spells, feats, skills, abilities, equipment, armor, and weapons. Skills include usual abilities and example uses. Spell dialogs show casting fields and sourced roll, damage, and area facts where available, with a direct rules-page link. `reference-rules.mjs`, `reference-feature-details.mjs`, and `reference-spell-mechanics.mjs` hold the added facts. The short summaries are planning aids; follow the linked guide for full edge-case wording.
+
 Class cards open a shared level 1–20 reference before subclass selection. The class foundation contains shared features and magic; the path view focuses on subclass additions. A play companion offers class habits and more specific subclass advice. Tap or keyboard-activate a spell name to expand its explanation. Spell options and suggested feats are labelled separately from grants.
 
 The party landing page opens with Nico marked as You and each member's class and subclass editable in place. **Make mine** switches the active player. Player identity and roster choices are saved on this device; they are not synced between devices.

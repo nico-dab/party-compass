@@ -7,6 +7,9 @@ import {referenceEquipment} from './reference-equipment.mjs';
 import {referenceCreatures} from './reference-creatures.mjs';
 import {referenceFeats} from './reference-feats.mjs';
 import {skills} from './reference-catalog.mjs';
+import {skillEntries, ruleTerms} from './reference-rules.mjs';
+import {featureDetails} from './reference-feature-details.mjs';
+import {spellMechanics} from './reference-spell-mechanics.mjs';
 
 const key = name => name.normalize('NFKC').replace(/[’‘]/g,"'").trim().toLowerCase();
 const details = new Set(Object.keys(classSpellDetails).map(key));
@@ -19,6 +22,16 @@ assert.deepEqual([...listed].filter(name=>!notes.get(name)),[], 'Every listed sp
 assert.deepEqual(Object.entries(spellReference).filter(([,item])=>!item.summary||['castingTime','range','components','duration'].some(field=>!item[field]||/(?:Range|Components|Duration):/.test(item[field]))),[], 'New spell facts must be complete and separated');
 
 assert.equal(skills.length,18);
+assert.equal(skillEntries.length,18);
+assert(skillEntries.every(item=>item.facts.some(([label])=>label==='Example uses')));
+assert(ruleTerms.some(item=>item.name==='Light Armor'&&item.facts.some(([label])=>label==='AC')));
+for (const term of ruleTerms.filter(item=>['Simple Weapons','Martial Weapons'].includes(item.name))) {
+  const names=term.facts.filter(([label])=>['Melee','Ranged'].includes(label)).flatMap(([,value])=>value.split(', '));
+  assert.deepEqual(names.filter(name=>!referenceEquipment.some(item=>key(item.name)===key(name))),[],`${term.name} list entries need in-app stats`);
+}
+assert(featureDetails['Unbreakable Majesty'].facts.some(([label])=>label==='Save'));
+assert.deepEqual([...details].filter(name=>!Object.keys(spellMechanics).some(keyName=>key(keyName)===name)),[], 'Every indexed spell needs casting fields and a direct rules link');
+assert(Object.values(spellMechanics).every(item=>item.castingTime&&item.range&&item.components&&item.duration&&item.source&&!/cart|marketplace/i.test(item.source)));
 assert.deepEqual(referenceFeats.map(item=>item.name).sort(),Object.keys(featNotes).sort());
 assert.deepEqual(referenceEquipment.filter(item=>!item.summary||!item.source||!item.facts?.length),[]);
 assert.deepEqual(referenceCreatures.filter(item=>!item.summary||!item.source||['Type','CR','AC','HP','Speed'].some(label=>!item.facts.some(([name])=>name===label))),[]);

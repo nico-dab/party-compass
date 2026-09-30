@@ -20,6 +20,12 @@
 .advice-extra summary { color: #e4c489; cursor: pointer; line-height: 1.5; }
 .advice-extra ul { padding-left: 18px; font-size: 13px; line-height: 1.8; }
 .class-actions { margin-top: 24px; }
+.next-step { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px; background: #213638; border: 1px solid #d9b77b66; border-radius: 10px; }
+.next-step-label { color: #d9b77b; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.inline-rule { display: inline; padding: 0; color: #e4c489; background: none; border: 0; border-bottom: 1px dotted currentColor; border-radius: 0; font: inherit; font-weight: inherit; line-height: inherit; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.inline-rule:hover, .inline-rule:focus-visible { color: #fff; border-bottom-style: solid; outline-offset: 3px; }
+.basic-list { margin: 6px 0 10px; }
+.basic-list summary { color: #e4c489; cursor: pointer; }
 .class-card[aria-pressed="true"] { border-color: #d9b77b; background: #283c3b; }
 .class-basics { padding-left: 20px; color: #c4d1c6; line-height: 1.7; font-size: 14px; }
 .feature-tip + .feature-tip { margin-top: 8px; }
@@ -348,7 +354,7 @@ summary:focus-visible { outline: 2px solid #e4c489; outline-offset: 2px; }
 .spell-dialog p { color: #d5e0d5; line-height: 1.7; }
 .spell-dialog a { color: #e4c489; }
 .dialog-close { float: right; padding: 4px 10px; color: #e4c489; background: transparent; border: 0; font-size: 28px; }
-.reference-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin: 0 0 20px; }
+.reference-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 8px; margin: 0 0 20px; }
 .reference-facts div { padding: 10px; background: #14262b; border: 1px solid #76907e44; border-radius: 7px; min-width: 0; }
 .reference-facts dt { color: #bba479; font-size: 11px; }
 .reference-facts dd { margin: 5px 0 0; overflow-wrap: anywhere; font-size: 14px; }

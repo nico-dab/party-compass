@@ -21,6 +21,8 @@ Read [README.md](README.md) and [STEP_2_PLAN.md](STEP_2_PLAN.md) before changing
 
 ## Class reference and play companion
 
+Known spell, feat, skill, ability, armor, weapon, and feature terms in the class, subclass, sidebar, and Reference screens open the same offline dialog. `reference-rules.mjs`, `reference-feature-details.mjs`, and `reference-spell-mechanics.mjs` hold 2024 rules facts; class and subclass guides remain primary where sources disagree. Skills need an example use and usual ability. Spell source links must point to readable rules entries, not storefront pages. Run `node reference-check.mjs` for reference changes, verify dialog keyboard access and offline reload, and include new runtime modules in both `publish.mjs` and `sw.js`.
+
 - Party members have stable IDs; the current player ID controls the You label and personalized advisor view. Keep class and subclass editable from every roster card. Keep the current player's card first and use the Make mine action to switch focus. This is local-only personalization, not an account or sync service.
 
 - `class-progression.mjs` owns shared class levels 1–20, resources, spell capacity, and class spell options. `spell-glossary.mjs` owns source-checked spell explanations. Keep shared features and spells in the class view; subclass panels show path additions. Spell choices follow allowed-book toggles and do not imply automatic grants.

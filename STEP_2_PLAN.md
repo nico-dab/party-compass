@@ -8,6 +8,8 @@ Help a player enter a party, pick any allowed class and subclass, see a clear pa
 
 ### Website reference update
 
+The class screen's subclass action is labeled step 03, and navigation says “Choose subclass.” Known rules terms in class basics, class and subclass descriptions, comparison lists, play sidebars, and search results open the same offline dialog. Skills show example uses and usual abilities. Spell dialogs use direct 2024 rules links, casting fields, and relevant sourced numeric facts. `reference-rules.mjs`, `reference-feature-details.mjs`, and `reference-spell-mechanics.mjs` supply the data. Acceptance includes modal links from each screen, Unbreakable Majesty and a primary ability, spell numbers and a direct rules link, keyboard use, and offline reload.
+
 The class screen now includes a selected-class reference with all twenty levels and the shared class foundation. The subclass screen is reserved for what each path adds, with a compact selector and a wide reading panel. Both have a play companion: broad class habits first, then subclass-specific choices and tradeoffs. Named spells have click/tap/keyboard explanations. Class spell options, subclass grants, and optional build suggestions remain separate.
 
 The party screen is the landing page and displays all players' editable class and subclass assignments. Stable player IDs keep the active You selection when display names change. The active player appears first, and each other card has a Make mine action. Personal selection is local to the device, with no login or cross-device sync.

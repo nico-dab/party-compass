@@ -25,7 +25,7 @@
     <nav class="steps" aria-label="Character planning steps">
       <button type="button" data-screen="party"><span>01</span> The party</button>
       <button type="button" data-screen="classes"><span>02</span> Your class</button>
-      <button type="button" data-screen="path"><span>03</span> Your path</button>
+      <button type="button" data-screen="path"><span>03</span> Choose subclass</button>
       <button type="button" data-screen="reference"><span>04</span> Reference</button>
     </nav>
 
@@ -57,7 +57,7 @@
     </section>
 
     <section id="screen-path" class="screen" aria-labelledby="path-title" hidden>
-      <div class="screen-heading path-heading"><div><span class="kicker">MAKE IT YOURS</span><h1 id="path-title">Choose your <em>path.</em></h1><p id="path-subtitle"></p></div><button id="change-class" type="button" class="text-button">Change class ↖</button></div>
+      <div class="screen-heading path-heading"><div><span class="kicker">MAKE IT YOURS</span><h1 id="path-title">Choose your <em>subclass.</em></h1><p id="path-subtitle"></p></div><button id="change-class" type="button" class="text-button">Change class ↖</button></div>
       <div id="class-fit" class="advisor-banner"></div>
         <nav class="path-picker" aria-label="Choose a subclass">
           <div class="list-heading"><div><span class="kicker">COMPARE YOUR OPTIONS</span><h2>Subclasses</h2></div></div>
@@ -77,6 +77,7 @@
       <div class="panel reference-panel">
         <label class="search-label" for="reference-search">Search the library<input id="reference-search" type="search" placeholder="Try Fireball, Plate Armor, Stealth, Goblin…" autocomplete="off"></label>
         <div id="reference-categories" class="reference-categories" role="group" aria-label="Filter reference category"></div>
+        <p class="section-note">The Skills table gives example uses for each skill proficiency and the ability check it usually uses. Your DM can pair a skill with another ability when it fits.</p>
         <p id="reference-count" class="section-note" aria-live="polite">Search by name, effect, or category.</p>
         <div id="reference-results" class="reference-results"></div>
       </div>

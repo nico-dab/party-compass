@@ -42,7 +42,25 @@ const weapons = [
   ['Warhammer','1d8 Bludgeoning','Versatile (1d10)','Push','5 lb.','15 GP'],
   ['Flail','1d8 Bludgeoning','—','Sap','2 lb.','10 GP'],
   ['Glaive','1d10 Slashing','Heavy, Reach, Two-Handed','Graze','6 lb.','20 GP'],
-  ['Halberd','1d10 Slashing','Heavy, Reach, Two-Handed','Cleave','6 lb.','20 GP']
+  ['Halberd','1d10 Slashing','Heavy, Reach, Two-Handed','Cleave','6 lb.','20 GP'],
+  ['Club','1d4 Bludgeoning','Light','Slow','2 lb.','1 SP'],
+  ['Greatclub','1d8 Bludgeoning','Two-Handed','Push','10 lb.','2 SP'],
+  ['Light hammer','1d4 Bludgeoning','Light, Thrown (20/60)','Nick','2 lb.','2 GP'],
+  ['Sickle','1d4 Slashing','Light','Nick','2 lb.','1 GP'],
+  ['Dart','1d4 Piercing','Finesse, Thrown (20/60)','Vex','1/4 lb.','5 CP'],
+  ['Sling','1d4 Bludgeoning','Ammunition (30/120; Bullet)','Slow','—','1 SP'],
+  ['Lance','1d10 Piercing','Heavy, Reach, Two-Handed (unless mounted)','Topple','6 lb.','10 GP'],
+  ['Maul','2d6 Bludgeoning','Heavy, Two-Handed','Topple','10 lb.','10 GP'],
+  ['Morningstar','1d8 Piercing','—','Sap','4 lb.','15 GP'],
+  ['Pike','1d10 Piercing','Heavy, Reach, Two-Handed','Push','18 lb.','5 GP'],
+  ['Scimitar','1d6 Slashing','Finesse, Light','Nick','3 lb.','25 GP'],
+  ['Trident','1d8 Piercing','Thrown (20/60), Versatile (1d10)','Topple','4 lb.','5 GP'],
+  ['War pick','1d8 Piercing','Versatile (1d10)','Sap','2 lb.','5 GP'],
+  ['Whip','1d4 Slashing','Finesse, Reach','Slow','3 lb.','2 GP'],
+  ['Blowgun','1 Piercing','Ammunition (25/100; Needle), Loading','Vex','1 lb.','10 GP'],
+  ['Hand crossbow','1d6 Piercing','Ammunition (30/120; Bolt), Light, Loading','Vex','3 lb.','75 GP'],
+  ['Musket','1d12 Piercing','Ammunition (40/120; Bullet), Loading, Two-Handed','Slow','10 lb.','500 GP'],
+  ['Pistol','1d10 Piercing','Ammunition (30/90; Bullet), Loading','Vex','3 lb.','250 GP']
 ].map(([name,damage,properties,mastery,weight,cost]) => ({
   name, category:'Weapons', summary:'The mastery property requires a feature that grants its use.',
   facts:[['Damage',damage],['Properties',properties],['Mastery',mastery],['Weight',weight],['Cost',cost]], source
@@ -59,7 +77,14 @@ const gear = [
   {name:'Component Pouch',summary:'Watertight pouch with compartments for the free material components of spells.',facts:[['Weight','2 lb.'],['Cost','25 GP']]}
 ].map(item => ({...item,category:'Adventuring gear',source}));
 
+const instruments = [
+  ['Bagpipes','30 GP','6 lb.'],['Drum','6 GP','3 lb.'],['Dulcimer','25 GP','10 lb.'],
+  ['Flute','2 GP','1 lb.'],['Horn','3 GP','2 lb.'],['Lute','35 GP','2 lb.'],
+  ['Lyre','30 GP','2 lb.'],['Pan flute','12 GP','2 lb.'],['Shawm','2 GP','1 lb.'],['Viol','30 GP','1 lb.']
+].map(([name,cost,weight])=>({name,category:'Musical instrument',summary:'Use Charisma to play a known tune (DC 10) or improvise a song (DC 15).',facts:[['Cost',cost],['Weight',weight],['Ability','Charisma']],source}));
+
 export const referenceEquipment = [
-  ...armor, ...weapons, ...gear,
+  ...armor, ...weapons, ...gear, ...instruments,
+  {name:'Tinker’s Tools',category:'Artisan’s tools',summary:'Use Dexterity to assemble a temporary Tiny item from scrap (DC 20); it falls apart after 1 minute.',facts:[['Cost','50 GP'],['Weight','10 lb.'],['Ability','Dexterity']],source},
   {name:'Potion of Healing',category:'Magic item',summary:'Drink or administer to a creature within 5 feet as a Bonus Action; the drinker regains 2d4 + 2 HP.',facts:[['Weight','1/2 lb.'],['Cost','50 GP'],['Rarity','Common']],source}
 ];
