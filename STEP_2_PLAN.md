@@ -10,6 +10,8 @@ Help a player enter a party, pick any allowed class and subclass, see a clear pa
 
 The class screen now includes a selected-class reference with all twenty levels and the shared class foundation. The subclass screen is reserved for what each path adds, with a compact selector and a wide reading panel. Both have a play companion: broad class habits first, then subclass-specific choices and tradeoffs. Named spells have click/tap/keyboard explanations. Class spell options, subclass grants, and optional build suggestions remain separate.
 
+The party screen is the landing page and displays all players' editable class and subclass assignments. Stable player IDs keep the active You selection when display names change. The active player appears first, and each other card has a Make mine action. Personal selection is local to the device, with no login or cross-device sync.
+
 Data lives in `class-progression.mjs`, `progression.mjs`, `spell-glossary.mjs`, and `strategy.mjs`. Dungeon Mister takes priority; official 2024 rules fill gaps, edition-checked Wikidot pages supply secondary mechanics, and RPGBOT informs strategy. See source notes for coverage and gaps. Spell options follow allowed-book toggles; D&D Beyond Drops spells have their own DM-review toggle.
 
 Acceptance: `node test.mjs`, `node audit-catalog.mjs`, `node scan-guides.mjs --refresh`, then all-class/all-path browser checks, responsive layout, keyboard spell expansion, saved-state reload and offline operation. Rebuild with `node publish.mjs`. Native packaging is explicitly outside this iteration.

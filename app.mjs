@@ -13,22 +13,24 @@ const spellDetailsByKey = new Map(Object.entries(classSpellDetails).map(([name,d
 const spellBookFor = name => spellDetailsByKey.get(spellKey(name))?.book || 'PHB';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || min));
 const option = (value, selected, label = value) => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(label)}</option>`;
-const emptyMember = i => ({name:`Adventurer ${i}`, className:'', subclass:'', species:'', possible:[]});
+const emptyMember = i => ({id:globalThis.crypto?.randomUUID?.() || `adventurer-${Date.now()}-${i}`,name:`Adventurer ${i}`,className:'',subclass:'',species:'',possible:[]});
 const initial = {
   members:[
-    {name:'Chip',className:'Paladin',subclass:'',species:'',possible:[]},
-    {name:'Peter',className:'Rogue',subclass:'',species:'',possible:[]},
-    {name:'Manish',className:'',subclass:'',species:'',possible:['Ranger','Wizard','Cleric']},
-    {name:'You',className:'',subclass:'',species:'',possible:[]}
+    {id:'chip',name:'Chip',className:'Paladin',subclass:'',species:'',possible:[]},
+    {id:'peter',name:'Peter',className:'Rogue',subclass:'',species:'',possible:[]},
+    {id:'manish',name:'Manish',className:'',subclass:'',species:'',possible:['Ranger','Wizard','Cleric']},
+    {id:'nico',name:'Nico',className:'Monk',subclass:'',species:'',possible:[]}
   ],
-  reserve:[], level:3, books:['PHB','Eberron','Ravenloft','Heroes of Faerun','Arcana Unleashed'], priority:'monk', selectedClass:'', selectedSubclass:'', goal:'', browseAll:false, search:''
+  activePlayer:'nico', reserve:[], level:3, books:['PHB','Eberron','Ravenloft','Heroes of Faerun','Arcana Unleashed'], priority:'monk', selectedClass:'Monk', selectedSubclass:'', goal:'', browseAll:false, search:''
 };
 
-function cleanMember(member) {
+function cleanMember(member, index = 0) {
   const legacy = member?.className === 'Ranger or caster';
+  const id = {Chip:'chip',Peter:'peter',Manish:'manish',You:'nico',Nico:'nico'}[member?.name] || `legacy-${index}`;
   return {
-    name:String(member?.name || '').slice(0,40),
-    className:legacy ? '' : classByName(member?.className)?.name || '',
+    id:String(member?.id || id),
+    name:String(member?.name === 'You' ? 'Nico' : member?.name || '').slice(0,40),
+    className:legacy ? '' : classByName(member?.className)?.name || (member?.name === 'You' ? 'Monk' : ''),
     subclass:String(member?.subclass || ''),
     species:String(member?.species || '').slice(0,60),
     possible:legacy ? ['Ranger','Wizard','Cleric'] : Array.isArray(member?.possible) ? member.possible.filter(name => classByName(name)) : []
@@ -41,11 +43,15 @@ function loadState() {
   const state = {...initial, ...saved};
   state.members = Array.isArray(saved.members) && saved.members.length >= 2 && saved.members.length <= 8 ? saved.members.map(cleanMember) : structuredClone(initial.members);
   state.reserve = Array.isArray(saved.reserve) ? saved.reserve.slice(0,7).map(cleanMember) : [];
+  state.activePlayer = state.members.some(member => member.id === state.activePlayer) ? state.activePlayer : state.members.at(-1).id;
   state.level = clamp(state.level || 3,1,20);
   state.books = ['PHB', ...['Eberron','Ravenloft','Heroes of Faerun','Arcana Unleashed','D&D Beyond Drops'].filter(book => state.books?.includes(book) || (!saved.catalogVersion && ['Heroes of Faerun','Arcana Unleashed'].includes(book)))];
   state.priority = ['monk','support','magic','control','open'].includes(state.priority) ? state.priority : 'monk';
-  state.selectedClass = availableClasses(state.books).find(c => c.name === state.selectedClass)?.name || '';
-  state.selectedSubclass = availableSubclasses(classByName(state.selectedClass) || {subs:[]},state.books).some(sub => sub[0] === state.selectedSubclass) ? state.selectedSubclass : '';
+  const active = state.members.find(member => member.id === state.activePlayer);
+  const legacyClass = saved.selectedClass || (active.name === 'Nico' && !active.className ? 'Monk' : active.className);
+  if (!active.className && classByName(legacyClass)) active.className = legacyClass;
+  state.selectedClass = availableClasses(state.books).find(c => c.name === active.className)?.name || '';
+  state.selectedSubclass = availableSubclasses(classByName(state.selectedClass) || {subs:[]},state.books).some(sub => sub[0] === active.subclass) ? active.subclass : '';
   state.goal = String(state.goal || '').slice(0,500);
   state.search = '';
   state.browseAll = false;
@@ -53,7 +59,8 @@ function loadState() {
 }
 
 let state = loadState();
-const others = () => state.members.slice(0,-1).map(member => {
+const currentMember = () => state.members.find(member => member.id === state.activePlayer) || state.members.at(-1);
+const others = () => state.members.filter(member => member.id !== state.activePlayer).map(member => {
   const c = classByName(member.className);
   const enabled = c && state.books.includes(bookForClass(c));
   return {...member,
@@ -64,7 +71,7 @@ const others = () => state.members.slice(0,-1).map(member => {
 });
 const settings = () => ({level:state.level,books:state.books,priority:state.priority});
 const save = () => {
-  try { localStorage.setItem('party-compass',JSON.stringify({catalogVersion:2,members:state.members,reserve:state.reserve,level:state.level,books:state.books,priority:state.priority,selectedClass:state.selectedClass,selectedSubclass:state.selectedSubclass,goal:state.goal})); } catch {}
+  try { localStorage.setItem('party-compass',JSON.stringify({catalogVersion:3,members:state.members,reserve:state.reserve,activePlayer:state.activePlayer,level:state.level,books:state.books,priority:state.priority,selectedClass:state.selectedClass,selectedSubclass:state.selectedSubclass,goal:state.goal})); } catch {}
 };
 
 function parsePossibilities(value) {
@@ -79,14 +86,18 @@ function renderMembers() {
   $('party-size').value = state.members.length;
   $('party-level').value = state.level;
   $('priority').value = state.priority;
+  if (!state.members.some(member => member.id === state.activePlayer)) state.activePlayer = state.members.at(-1).id;
+  const active = currentMember();
+  $('party-title').innerHTML = `Your party, <em>${escapeHtml(active.name)}</em>`;
   const allowed = availableClasses(state.books);
-  $('party-members').innerHTML = state.members.map((member,index) => {
-    const self = index === state.members.length - 1;
+  const ordered = state.members.map((member,index) => ({member,index})).sort((a,b) => Number(b.member.id === state.activePlayer) - Number(a.member.id === state.activePlayer));
+  $('party-members').innerHTML = ordered.map(({member,index}) => {
+    const isActive = member.id === state.activePlayer;
     const c = classByName(member.className);
     const subclasses = c ? availableSubclasses(c,state.books) : [];
     const unavailable = c && !allowed.some(item=>item.name===c.name);
     const unavailableSub = c?.subs.find(sub=>sub[0]===member.subclass) && !subclasses.some(sub=>sub[0]===member.subclass);
-    return `<article class="member-card" data-index="${index}"><div class="member-head"><span class="member-avatar" aria-hidden="true">${escapeHtml((member.name || '?')[0].toUpperCase())}</span><input data-field="name" aria-label="Adventurer ${index+1} name" maxlength="40" value="${escapeHtml(member.name)}"><small>${self?'YOU':''}</small></div><div class="member-fields"><label>Class<select data-field="className" ${self?'disabled':''}>${option('',member.className,self?'Choose next':'Undecided')}${unavailable?option(c.name,member.className,`${c.name} · book off`):''}${allowed.map(item=>option(item.name,member.className)).join('')}</select></label><label>Species<input data-field="species" list="species-list" maxlength="60" value="${escapeHtml(member.species)}" placeholder="Choose later"></label></div>${unavailable?'<p class="field-warning">This class is not counted while its book is off.</p>':''}${!self && c ? `<div class="member-fields" style="margin-top:10px"><label>Subclass<select data-field="subclass">${option('',member.subclass,'Not chosen')}${unavailableSub?option(member.subclass,member.subclass,`${member.subclass} · book off`):''}${subclasses.map(sub=>option(sub[0],member.subclass)).join('')}</select></label></div>${unavailableSub?'<p class="field-warning">This subclass is not counted while its book is off.</p>':''}` : ''}${!self && !c ? `<label class="uncertain-field">Possible classes<input data-field="possible" value="${escapeHtml(member.possible.join(', '))}" placeholder="Ranger, Wizard, Cleric"><small>Separate class names with commas. “Caster” includes all allowed spellcasters.</small></label>` : ''}</article>`;
+    return `<article class="member-card ${isActive ? 'active-player' : ''}" data-index="${index}" data-player-id="${escapeHtml(member.id)}"><div class="member-head"><span class="member-avatar" aria-hidden="true">${escapeHtml((member.name || '?')[0].toUpperCase())}</span><input data-field="name" aria-label="Adventurer ${index+1} name" maxlength="40" value="${escapeHtml(member.name)}"><small>${isActive ? 'YOU' : ''}</small>${isActive ? '' : `<button type="button" class="profile-switch" data-make-mine aria-label="Switch to ${escapeHtml(member.name)}">Make mine</button>`}</div><div class="member-fields"><label>Class<select data-field="className">${option('',member.className,'Choose class')}${unavailable?option(c.name,member.className,`${c.name} · book off`):''}${allowed.map(item=>option(item.name,member.className)).join('')}</select></label><label>Species<input data-field="species" list="species-list" maxlength="60" value="${escapeHtml(member.species)}" placeholder="Choose later"></label></div>${unavailable?'<p class="field-warning">This class is not counted while its book is off.</p>':''}${c ? `<div class="member-fields subclass-fields"><label>Subclass<select data-field="subclass">${option('',member.subclass,'Choose subclass')}${unavailableSub?option(member.subclass,member.subclass,`${member.subclass} · book off`):''}${subclasses.map(sub=>option(sub[0],member.subclass)).join('')}</select></label></div>${unavailableSub?'<p class="field-warning">This subclass is not counted while its book is off.</p>':''}` : `<label class="uncertain-field">Possible classes<input data-field="possible" value="${escapeHtml(member.possible.join(', '))}" placeholder="Ranger, Wizard, Cleric"><small>Separate class names with commas. “Caster” includes all allowed spellcasters.</small></label>`}</article>`;
   }).join('') + `<datalist id="species-list">${species.map(name=>`<option value="${escapeHtml(name)}"></option>`).join('')}</datalist>`;
 }
 
@@ -234,7 +245,7 @@ const render = () => {renderMembers();renderBooks();renderScreen();save();};
 
 $('party-size').addEventListener('change', event => {
   const size = clamp(event.target.value,2,8);
-  const self = state.members.pop();
+  const self = state.members.splice(state.members.findIndex(member => member.id === state.activePlayer),1)[0];
   if (state.members.length > size-1) state.reserve = [...state.members.splice(size-1),...state.reserve];
   while (state.members.length < size-1) state.members.push(state.reserve.shift() || emptyMember(state.members.length+1));
   state.members.push(self);
@@ -254,7 +265,19 @@ $('party-members').addEventListener('input', event => {
   const card = event.target.closest('.member-card');
   if (!card) return;
   const member = state.members[Number(card.dataset.index)];
-  if (event.target.dataset.field === 'name' || event.target.dataset.field === 'species') {member[event.target.dataset.field]=event.target.value;save();}
+  if (event.target.dataset.field === 'name' || event.target.dataset.field === 'species') {member[event.target.dataset.field]=event.target.value;if(member.id===state.activePlayer)$('party-title').innerHTML=`Your party, <em>${escapeHtml(member.name)}</em>`;save();}
+});
+$('party-members').addEventListener('click', event => {
+  const button = event.target.closest('[data-make-mine]');
+  if (!button) return;
+  const card = button.closest('.member-card');
+  const member = state.members.find(item => item.id === card.dataset.playerId);
+  if (!member) return;
+  state.activePlayer = member.id;
+  state.selectedClass = member.className;
+  state.selectedSubclass = member.subclass;
+  render();
+  $('party-title').focus({preventScroll:true});
 });
 $('party-members').addEventListener('change', event => {
   const card = event.target.closest('.member-card');
@@ -263,7 +286,8 @@ $('party-members').addEventListener('change', event => {
   const field = event.target.dataset.field;
   if (field === 'possible') member.possible = parsePossibilities(event.target.value);
   else if (field) member[field] = event.target.value;
-  if (field === 'className') {member.subclass='';member.possible=[];}
+  if (field === 'className') {member.subclass='';member.possible=[];if(member.id===state.activePlayer){state.selectedClass=member.className;state.selectedSubclass='';}}
+  if (field === 'subclass' && member.id===state.activePlayer) state.selectedSubclass=member.subclass;
   render();
 });
 $('party-next').addEventListener('click',()=>go('classes'));
@@ -277,8 +301,8 @@ for (const id of ['suggested-grid','class-grid']) $(id).addEventListener('click'
   if(!button)return;
   if(state.selectedClass!==button.dataset.class)state.selectedSubclass='';
   state.selectedClass=button.dataset.class;
-  state.members.at(-1).className=state.selectedClass;
-  state.members.at(-1).subclass=state.selectedSubclass;
+  currentMember().className=state.selectedClass;
+  currentMember().subclass=state.selectedSubclass;
   save();renderScreen();
   $('selected-class-title').focus({preventScroll:true});
   $('class-reference').scrollIntoView({block:'start',behavior:'instant'});
@@ -286,7 +310,7 @@ for (const id of ['suggested-grid','class-grid']) $(id).addEventListener('click'
 function chooseSubclass(name) {
   if (!availableSubclasses(classByName(state.selectedClass),state.books).some(sub=>sub[0] === name)) return;
   state.selectedSubclass=name;
-  state.members.at(-1).subclass=name;
+  currentMember().subclass=name;
   save();renderPath();
   $('path-announcement').textContent = `${name} selected. Features and build choices updated.`;
   const heading = $('selected-path-title');

@@ -109,6 +109,10 @@ h1 em { color: #dab77c; font-weight: 400; }
 .setup-row input { display: block; width: 85px; margin-top: 9px; padding: 10px; background: #112127; color: #f3e9d6; border: 1px solid #829a8870; }
 .party-members { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; margin-top: 21px; }
 .member-card { background: #14232a; border: 1px solid #78917d40; padding: 17px; }
+.member-card.active-player { grid-column: 1 / -1; border-color: #d9b77b; background: linear-gradient(115deg,#263d3b,#192b30); }
+.profile-switch { min-height: 40px; padding: 8px 12px; color: #e4c489; background: transparent; border: 1px solid #b59a68; font-size: 11px; font-weight: 700; }
+.profile-switch:hover { background: #d9b77b1b; }
+.subclass-fields { margin-top: 10px; }
 .member-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .member-avatar { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #c4a87585; border-radius: 50%; color: #e2c28f; font-family: Georgia, serif; }
 .member-head input { min-width: 0; flex: 1; border: 0; border-bottom: 1px solid #5b766a; padding: 7px 0; background: transparent; color: #f0eee1; font-size: 14px; font-weight: 700; }

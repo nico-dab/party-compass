@@ -1,4 +1,4 @@
-const CACHE = 'party-compass-v17';
+const CACHE = 'party-compass-v18';
 const FILES = ['./', './index.html', './styles.css', './app.mjs', './catalog.mjs', './advisor.mjs', './progression.mjs', './class-progression.mjs', './strategy.mjs', './spell-glossary.mjs', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {

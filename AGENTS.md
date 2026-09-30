@@ -21,6 +21,8 @@ Read [README.md](README.md) and [STEP_2_PLAN.md](STEP_2_PLAN.md) before changing
 
 ## Class reference and play companion
 
+- Party members have stable IDs; the current player ID controls the You label and personalized advisor view. Keep class and subclass editable from every roster card. Keep the current player's card first and use the Make mine action to switch focus. This is local-only personalization, not an account or sync service.
+
 - `class-progression.mjs` owns shared class levels 1–20, resources, spell capacity, and class spell options. `spell-glossary.mjs` owns source-checked spell explanations. Keep shared features and spells in the class view; subclass panels show path additions. Spell choices follow allowed-book toggles and do not imply automatic grants.
 - `strategy.mjs` owns class and subclass play suggestions. Show the companion beside the reading panel on desktop and below it on mobile. Label advice and optional feats separately from granted features.
 - Dungeon Mister remains the preferred reference when sources disagree. Supplement gaps with official 2024 rules. Wikidot requires an edition check; legacy 2014 mechanics must not replace 2024 data. RPGBOT provides secondary strategy context, not rules authority or a universal subclass ranking.
