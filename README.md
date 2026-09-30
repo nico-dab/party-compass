@@ -20,6 +20,10 @@ The app uses browser `localStorage`; each device has its own data. A native app 
 
 ## Rules and sources
 
+Class cards open a shared level 1–20 reference before subclass selection. The class foundation contains shared features and magic; the path view focuses on subclass additions. A play companion offers class habits and more specific subclass advice. Tap or keyboard-activate a spell name to expand its explanation. Spell options and suggested feats are labelled separately from grants.
+
+`class-progression.mjs` contains the shared class reference; `strategy.mjs` and `spell-glossary.mjs` contain the play companion and spell explanations. `CLASS_SOURCES.md`, `SUBCLASS_SOURCES.md`, `SPELL_SOURCES.md`, and `STRATEGY_SOURCES.md` document provenance and gaps. Dungeon Mister takes priority over conflicting references. Official 2024 rules supplement class data, edition-checked Wikidot pages supply secondary mechanics, and RPGBOT supplies strategy context. The app is a planning aid, not a complete rules database.
+
 The catalog matches all 76 subclasses on the [Dungeon Mister 2024 class index](https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/) as checked on 2026-09-27, plus the [species index](https://dungeonmister.com/guides/races-and-species-in-dnd-2024/). The index abbreviates Arcana Unleashed as **AU** and Forgotten Realms: Heroes of Faerûn as **HoF**; AU does not mean Unearthed Arcana. The [D&D Beyond 2024 Free Rules](https://www.dndbeyond.com/sources/dnd/br-2024/character-classes) support common class milestones. Expansion choices are labeled and controlled by book toggles. Strategy text is original guidance; follow the linked source for exact feature text and timing. The DM decides which books are allowed.
 
 ## Install and future native builds

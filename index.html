@@ -49,24 +49,31 @@
       <div id="suggested-grid" class="class-grid"></div>
       <div class="browse-heading"><button id="browse-all" type="button" class="outline-button" aria-expanded="false">Browse every class <span aria-hidden="true">＋</span></button></div>
       <div id="all-classes" hidden><label class="search-label">Search classes <input id="class-search" type="search" placeholder="Name or play style"></label><div id="class-grid" class="class-grid all-grid"></div></div>
+      <div id="class-reference" class="reading-layout" hidden>
+        <article id="selected-class" class="panel path-detail" aria-labelledby="selected-class-title"></article>
+        <aside id="class-companion" class="panel play-companion" aria-label="Class play suggestions"></aside>
+      </div>
     </section>
 
     <section id="screen-path" class="screen" aria-labelledby="path-title" hidden>
       <div class="screen-heading path-heading"><div><span class="kicker">MAKE IT YOURS</span><h1 id="path-title">Choose your <em>path.</em></h1><p id="path-subtitle"></p></div><button id="change-class" type="button" class="text-button">Change class ↖</button></div>
       <div id="class-fit" class="advisor-banner"></div>
-      <div class="path-layout">
         <nav class="path-picker" aria-label="Choose a subclass">
           <div class="list-heading"><div><span class="kicker">COMPARE YOUR OPTIONS</span><h2>Subclasses</h2></div></div>
           <label class="mobile-path-label" for="subclass-select">Read about a subclass<select id="subclass-select"></select></label>
           <div id="subclass-grid" class="subclass-grid"></div>
         </nav>
+      <div class="reading-layout">
         <article class="panel path-detail" aria-labelledby="selected-path-title"><div id="selected-path"></div></article>
+        <aside id="path-companion" class="panel play-companion" aria-label="Subclass play suggestions"></aside>
       </div>
       <p id="path-announcement" class="sr-only" role="status"></p>
       <div class="panel goal-panel"><label for="goal">Campaign goal or next-session reminder</label><textarea id="goal" maxlength="500" rows="3" placeholder="What does your character want? What should you remember next session?"></textarea><span class="save-note">Saved on this device</span></div>
     </section>
 
     <section class="sources" id="sources"><span class="kicker">SOURCES & SCOPE</span><h2>Your DM has the final word.</h2><p>Party Compass offers original, rules-based suggestions for the 2024 rules. Strategies are ideas, not copied rule text. Expansion options need your DM’s approval. Your choices stay on this device; there is no account, AI service, or subscription.</p><div class="source-links"><a href="https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Classes & subclasses ↗</a><a href="https://dungeonmister.com/guides/races-and-species-in-dnd-2024/" target="_blank" rel="noopener noreferrer">Species ↗</a><a href="https://www.dndbeyond.com/sources/dnd/br-2024/character-classes" target="_blank" rel="noopener noreferrer">Free 2024 class rules ↗</a></div></section>
+    <p class="source-policy">Dungeon Mister is our primary guide when references disagree. Official 2024 rules and edition-checked Wikidot pages fill gaps. <a href="https://rpgbot.net/2024-dnd/2024-dnd-meta/" target="_blank" rel="noopener noreferrer">RPGBOT</a> offers another perspective on build strategy. <a href="https://dnd5e.wikidot.com/" target="_blank" rel="noopener noreferrer">Legacy Wikidot</a> includes older rules; check the edition before using it.</p>
+    <p class="source-policy">Dungeon Mister is our primary guide when sources disagree. Official 2024 rules and edition-checked Wikidot pages fill gaps. <a href="https://rpgbot.net/2024-dnd/2024-dnd-meta/" target="_blank" rel="noopener noreferrer">RPGBOT</a> offers another perspective on build strategy. <a href="https://dnd5e.wikidot.com/" target="_blank" rel="noopener noreferrer">Legacy Wikidot</a> includes older rules; check the edition before using it.</p>
   </main>
   <footer><span>✦ PARTY COMPASS</span><span>For the story ahead.</span></footer>
 </body>

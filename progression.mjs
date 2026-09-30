@@ -227,9 +227,9 @@ export const spellPlans = {
   Bard: [[1,['Dissonant Whispers','Healing Word']],[3,['Invisibility','Suggestion']],[5,['Dispel Magic','Hypnotic Pattern']],[7,['Dimension Door','Greater Invisibility']],[9,['Hold Monster','Synaptic Static']]],
   Druid: [[1,['Entangle','Goodberry']],[3,['Moonbeam','Pass without Trace']],[5,['Call Lightning','Conjure Animals']],[7,['Polymorph','Wall of Fire']],[9,['Greater Restoration','Wall of Stone']]],
   Ranger: [[2,['Goodberry','Hunter’s Mark']],[5,['Pass without Trace','Spike Growth']],[9,['Conjure Animals','Lightning Arrow']],[13,['Freedom of Movement','Locate Creature']],[17,['Steel Wind Strike','Swift Quiver']]],
-  Paladin: [[2,['Bless','Shield of Faith']],[5,['Aid','Find Steed']],[9,['Aura of Vitality','Revivify']],[13,['Aura of Life','Find Greater Steed']],[17,['Circle of Power','Destructive Wave']]],
+  Paladin: [[2,['Bless','Shield of Faith']],[5,['Aid','Find Steed']],[9,['Aura of Vitality','Revivify']],[13,['Aura of Life','Banishment']],[17,['Circle of Power','Destructive Wave']]],
   Sorcerer: [[1,['Magic Missile','Shield']],[3,['Misty Step','Scorching Ray']],[5,['Counterspell','Fireball']],[7,['Banishment','Polymorph']],[9,['Hold Monster','Telekinesis']]],
-  Warlock: [[1,['Armor of Agathys','Hex']],[3,['Darkness','Misty Step']],[5,['Counterspell','Hunger of Hadar']],[7,['Banishment','Shadow of Moil']],[9,['Hold Monster','Synaptic Static']]],
+  Warlock: [[1,['Armor of Agathys','Hex']],[3,['Darkness','Misty Step']],[5,['Counterspell','Hunger of Hadar']],[7,['Banishment','Dimension Door']],[9,['Hold Monster','Synaptic Static']]],
   Wizard: [[1,['Mage Armor','Shield']],[3,['Misty Step','Web']],[5,['Counterspell','Fireball']],[7,['Dimension Door','Polymorph']],[9,['Wall of Force','Teleportation Circle']]],
   Artificer: [[1,['Cure Wounds','Faerie Fire']],[5,['Aid','Heat Metal']],[9,['Haste','Revivify']],[13,['Freedom of Movement','Stone Shape']],[17,['Greater Restoration','Wall of Stone']]]
 };
@@ -267,6 +267,32 @@ export const subclassGuideLinks = {
 };
 
 Object.assign(spellNotes, {
+  'Flaming Sphere':'Move a sphere of fire to threaten nearby creatures while concentrating.',
+  'Melf’s Acid Arrow':'Strike a target with acid that can keep burning after the initial hit.',
+  'Gaseous Form':'Turn a willing creature into mist for infiltration and travel through small openings.',
+  'Vitriolic Sphere':'Burst an area with acid that can inflict additional damage afterward.',
+  'Tasha’s Bubbling Cauldron':'Conjure a magical cauldron that produces a limited supply of potions.',
+  Passwall:'Open a temporary passage through wood, plaster, or stone.',
+  'Wind Wall':'Raise a wall of wind that damages creatures and interferes with gases and projectiles.',
+  'Shining Smite':'Empower a weapon hit with radiant light that reveals the target and helps attacks against it.',
+  'Warding Bond':'Improve an ally’s defenses while sharing the damage they take.',
+  'Conjure Barrage':'Create a cone of spectral weapons that damages creatures in its area.',
+  'Aura of Purity':'Protect nearby allies against poison and several debilitating conditions.',
+  'Banishing Smite':'Empower a weapon hit and potentially banish its target temporarily.',
+  'Locate Object':'Sense the direction of a familiar or specified nearby object.',
+  'Mind Spike':'Deal psychic damage and track the target while you concentrate.',
+  'Comprehend Languages':'Understand the literal meaning of speech and readable written language.',
+  Identify:'Learn an object’s magical properties or spells affecting a creature.',
+  Tongues:'Let a creature understand speech and be understood by other speakers.',
+  'Thunderous Smite':'Empower a weapon hit with thunder that can push and knock down the target.',
+  'Conjure Minor Elementals':'Create an elemental aura that hinders enemies and adds damage to your attacks.',
+  'Summon Elemental':'Call an elemental spirit with a chosen elemental form.',
+  'Contact Other Plane':'Seek answers from an extraplanar entity, with a risk of psychic harm.',
+  'Ice Knife':'Throw an icy blade that bursts into cold damage around its target.',
+  'Remove Curse':'End curses affecting a creature or object, subject to special curse restrictions.',
+  'Starry Wisp':'Hurl radiant light that reveals a struck creature and prevents it from benefiting from invisibility briefly.',
+  Thunderwave:'Blast a cube with thunder damage and push creatures away on a failed save.',
+  Shatter:'Deal thunder damage in an area, also threatening fragile unattended objects.',
   'Dissonant Whispers':'Deal psychic damage and potentially force a target to flee, provoking opportunity attacks.',
   'Invisibility':'Make a creature unseen until it attacks or casts a spell.', 'Suggestion':'Magically persuade a creature to follow a reasonable course of action.',
   'Dispel Magic':'End a spell affecting a creature, object, or area.', 'Hypnotic Pattern':'Dazzle creatures in an area, potentially charming and incapacitating them.',
@@ -463,3 +489,360 @@ export const featNotes = {
 export function featLevelsFor(className) {
   return [4,8,12,16,...(className === 'Fighter' ? [6,14] : className === 'Rogue' ? [10] : [])].sort((a,b)=>a-b);
 }
+
+// Core 2024 corrections: Dungeon Mister individual and class comparison guides, 2026-09-29.
+Object.assign(subclassProgression.Bard, {
+  'College of Dance': [[3,'Dazzling Footwork','Gain unarmored defense, advantage on dancing checks, and unarmed strikes linked to Bardic Inspiration.'],[6,'Inspiring Movement + Tandem Footwork','Spend inspiration to move yourself and an ally out of danger; help the party’s initiative.'],[14,'Leading Evasion','Avoid damage on successful Dexterity saves and share that protection with nearby allies.']],
+  'College of Lore': [[3,'Bonus Proficiencies + Cutting Words','Learn three skills; use inspiration to reduce enemy attacks, checks, or damage.'],[6,'Magical Discoveries','Choose two spells from the Cleric, Druid, or Wizard lists.'],[14,'Peerless Skill','Use inspiration after failing your own attack or ability check; keep the use if it still fails.']]
+});
+subclassProgression.Monk['Warrior of Shadow'] = [[3,'Shadow Arts','Gain Minor Illusion and improved darkvision; spend Focus on Darkness that you can see through.'],[6,'Shadow Step','Teleport between dim light or darkness and gain advantage on your next melee attack.'],[11,'Improved Shadow Step','Spend Focus to ignore the teleport’s light restriction and make an unarmed strike afterward.'],[17,'Cloak of Shadows','Spend Focus in dim light or darkness for invisibility, movement through creatures, and free Flurry of Blows.']];
+subclassProgression.Monk['Warrior of the Open Hand'][2] = [11,'Fleet Step','Use Step of the Wind immediately after taking another Bonus Action.'];
+subclassProgression.Monk['Warrior of the Open Hand'][0] = [3,'Open Hand Technique','Your Flurry of Blows can push, topple, or prevent opportunity attacks from a target.'];
+subclassProgression.Monk['Warrior of Mercy'][0] = [3,'Hand of Healing + Hand of Harm + Implements of Mercy','Gain Insight, Medicine, and an Herbalism Kit proficiency; spend Focus to heal or add necrotic damage.'];
+subclassProgression.Monk['Warrior of the Elements'][0] = [3,'Elemental Attunement + Manipulate Elements','Learn Elementalism; spend Focus for elemental strikes with extended reach and pushing or pulling.'];
+subclassProgression.Monk['Warrior of the Elements'][1] = [6,'Elemental Burst','Spend Focus to create a damaging burst of a chosen elemental type at range.'];
+subclassProgression.Druid['Circle of the Land'][3] = [14,'Nature’s Sanctuary','Spend Wild Shape to create a protective area, sharing your land resistance and granting cover.'];
+subclassProgression.Druid['Circle of the Moon'][2] = [10,'Moonlight Step','Teleport as a Bonus Action and gain advantage on your next attack; this also works outside Wild Shape.'];
+subclassProgression.Druid['Circle of the Moon'][0] = [3,'Circle Forms + Circle Spells','Gain stronger beast forms, improved Armor Class and temporary hit points; cast your circle spells while transformed.'];
+subclassProgression.Druid['Circle of the Moon'][1] = [6,'Improved Circle Forms','Your beast attacks can deal radiant damage, and Wisdom strengthens your Constitution saves.'];
+subclassProgression.Ranger['Gloom Stalker'] = [[3,'Dread Ambusher + Umbral Sight','Improve initiative and first-turn speed, add limited psychic bursts, and hide from darkvision in darkness.'],[7,'Iron Mind','Gain Wisdom saving throw proficiency, with an alternative if already proficient.'],[11,'Stalker’s Flurry','Improve Dreadful Strike damage and add a nearby attack or mass fear effect.'],[15,'Shadowy Dodge','Impose disadvantage on an incoming attack, then teleport after it resolves.']];
+subclassProgression.Ranger.Hunter = [[3,'Hunter’s Lore + Hunter’s Prey','Read a marked target’s defenses; choose Colossus Slayer or Horde Breaker for extra damage.'],[7,'Defensive Tactics','Choose protection against opportunity attacks or repeated attacks; change the choice after a rest.'],[11,'Superior Hunter’s Prey','Spread Hunter’s Mark damage to another nearby creature.'],[15,'Superior Hunter’s Defense','Use a reaction to resist the damage type that just hit you until the turn ends.']];
+subclassProgression.Ranger['Beast Master'][2] = [11,'Bestial Fury','Your companion attacks twice; it can also benefit from your Hunter’s Mark damage.'];
+subclassProgression.Ranger['Fey Wanderer'][2] = [11,'Fey Reinforcements','Always prepare Summon Fey, gain a free casting, and optionally shorten its duration to remove Concentration.'];
+subclassProgression.Barbarian['Path of the Berserker'][0] = [3,'Frenzy','Add damage on your first qualifying hit each turn while using Reckless Attack during Rage.'];
+subclassProgression.Barbarian['Path of the Berserker'][1] = [6,'Mindless Rage','Become immune to Charmed and Frightened while raging.'];
+subclassProgression.Barbarian['Path of the Wild Heart'][1] = [6,'Aspect of the Wilds','Choose enhanced darkvision, a climb speed, or a swim speed; change the choice after a Long Rest.'];
+subclassProgression.Barbarian['Path of the Wild Heart'][2] = [10,'Nature Speaker','Cast Commune with Nature as a Ritual to learn about your surroundings.'];
+subclassProgression.Barbarian['Path of the Wild Heart'][3] = [14,'Power of the Wilds','When raging, choose unarmored flight, protection for allies, or a knockdown effect on melee hits.'];
+subclassProgression.Barbarian['Path of the World Tree'][0] = [3,'Vitality of the Tree','Gain temporary hit points when raging and grant temporary hit points to a nearby ally on later turns.'];
+subclassProgression.Barbarian['Path of the Zealot'][0] = [3,'Divine Fury + Warrior of the Gods','Add radiant or necrotic damage to a qualifying hit and gain a pool of self-healing dice.'];
+subclassProgression.Paladin['Oath of the Ancients'][1] = [7,'Aura of Warding','Your aura grants resistance to necrotic, psychic, and radiant damage.'];
+subclassProgression.Fighter['Eldritch Knight'][1] = [7,'War Magic','Replace one attack in your Attack action with a Wizard cantrip.'];
+subclassProgression.Fighter['Eldritch Knight'][0] = [3,'Spellcasting + War Bond','Choose Wizard spells using Intelligence and magically bond with weapons that you can summon back.'];
+subclassProgression.Fighter['Battle Master'][0] = [3,'Combat Superiority + Student of War','Choose three maneuvers fueled by Superiority Dice; gain a skill and an artisan’s tool proficiency.'];
+subclassProgression.Fighter['Battle Master'][3] = [15,'Relentless','Once per turn, use a maneuver with a d8 instead of spending a Superiority Die.'];
+subclassProgression.Bard['College of Valor'][0] = [3,'Combat Inspiration + Martial Training','Inspiration can boost damage or defense; gain medium armor, shields, martial weapons, and weapon spellcasting foci.'];
+subclassProgression.Fighter['Eldritch Knight'][4] = [18,'Improved War Magic','Replace two attacks with a level 1 or 2 Wizard spell that normally takes an action.'];
+subclassProgression.Rogue.Assassin = [[3,'Assassinate + Assassin’s Tools','Gain initiative and opening-turn advantages, extra first-turn Sneak Attack damage, and disguise and poison tools.'],[9,'Infiltration Expertise','Mimic speech or handwriting and move more freely while aiming.'],[13,'Envenom Weapons','Enhance the Poison option of Cunning Strike with extra poison damage.'],[17,'Death Strike','A first-round Sneak Attack can deal double damage if the target fails its save.']];
+subclassProgression.Rogue['Arcane Trickster'][2] = [13,'Versatile Trickster','Use Mage Hand to extend Cunning Strike’s Trip option to another nearby creature.'];
+subclassProgression.Rogue.Soulknife[1] = [9,'Soul Blades: Homing Strikes + Psychic Teleportation','Spend Psionic Energy to turn a missed blade attack into a hit or teleport to a thrown blade.'];
+subclassProgression.Sorcerer['Aberrant Sorcery'][1] = [6,'Psionic Sorcery + Psychic Defenses','Cast your psionic spells with Sorcery Points; resist psychic damage and improve charm and fear saves.'];
+subclassProgression.Sorcerer['Draconic Sorcery'][0] = [3,'Draconic Resilience + Draconic Spells','Gain extra hit points, a Charisma-based unarmored defense, and dragon-themed prepared spells.'];
+subclassProgression.Sorcerer['Draconic Sorcery'][3] = [18,'Dragon Companion','Cast Summon Dragon without components or Concentration, with a free use between Long Rests.'];
+subclassProgression.Sorcerer['Wild Magic Sorcery'][3] = [18,'Tamed Surge','Choose a Wild Magic Surge result instead of rolling, once between Long Rests.'];
+subclassProgression.Warlock['Archfey Patron'] = [[3,'Steps of the Fey + Archfey Spells','Gain free Misty Step uses and choose a refreshing or taunting effect when teleporting.'],[6,'Misty Escape','React to damage with Misty Step; gain disappearing and dreadful teleport options.'],[10,'Beguiling Defenses','Become immune to Charmed and react to damage with protection and psychic retaliation.'],[14,'Bewitching Magic','Follow a slotted Enchantment or Illusion spell with a free Misty Step.']];
+subclassProgression.Warlock['Great Old One Patron'][0] = [3,'Awakened Mind + Psychic Spells','Form a telepathic bond; reshape spell damage into psychic damage and cast some spells without words or gestures.'];
+subclassProgression.Warlock['Great Old One Patron'][2] = [10,'Eldritch Hex + Thought Shield','Hex also hinders one type of saving throw; resist psychic damage and reflect it at the attacker.'];
+subclassProgression.Warlock['Great Old One Patron'][3] = [14,'Create Thrall','Empower Summon Aberration without Concentration; the summon gains resilience and extra damage against your Hex target.'];
+subclassProgression.Wizard.Abjurer[2] = [10,'Spell Breaker','Always prepare Counterspell and Dispel Magic; improve dispelling and cast Dispel Magic as a Bonus Action.'];
+subclassProgression.Wizard.Abjurer[3] = [14,'Spell Resistance','Gain advantage on saves against spells and resistance to their damage.'];
+subclassProgression.Wizard.Illusionist[0] = [3,'Illusion Savant + Improved Illusions','Learn illusions, extend their range, and omit verbal components; improve Minor Illusion and cast it as a Bonus Action.'];
+subclassProgression.Wizard.Illusionist[1] = [6,'Phantasmal Creatures','Prepare Summon Beast and Summon Fey; free illusory versions have reduced hit points.'];
+subclassProgression.Artificer.Alchemist[0] = [3,'Tools of the Trade + Experimental Elixir','Gain alchemy and herbalism tools, faster potion crafting, prepared spells, and a growing supply of magical elixirs.'];
+subclassProgression.Artificer.Armorer[0] = [3,'Tools of the Trade + Arcane Armor + Armor Model','Gain heavy armor and smithing tools; use Intelligence with Dreadnaught, Guardian, or Infiltrator armor weapons.'];
+subclassProgression.Artificer['Battle Smith'][0] = [3,'Tools of the Trade + Battle Ready + Steel Defender','Gain smithing tools and martial weapons; attack with Intelligence and command a protective construct.'];
+subclassProgression.Fighter['Arcane Archer'][0] = [3,'Arcane Archer Lore + Arcane Shot','Gain Arcana and Nature, choose a utility cantrip, and learn two magical ammunition effects.'];
+subclassProgression.Fighter.Banneret[0] = [3,'Knightly Envoy + Group Recovery','Gain a social skill, a changeable language, and ritual translation; share healing when you use Second Wind.'];
+subclassProgression.Rogue.Phantom[1] = [9,'Tokens of the Departed + Voice of Death','Collect soul trinkets for resilience, extra wails, and Augury; gain limited Speak with Dead castings.'];
+
+// Named grants only. These are separate from optional class spell examples.
+export const subclassSpells = {
+  ...clericDomains, ...expansionSpells,
+  'Path of the Wild Heart':[[3,['Beast Sense','Speak with Animals']],[10,['Commune with Nature']]],
+  'Psi Warrior':[[18,['Telekinesis']]],
+  Alchemist:[[3,['Healing Word','Ray of Sickness']],[5,['Flaming Sphere','Melf’s Acid Arrow']],[9,['Gaseous Form','Mass Healing Word','Lesser Restoration']],[13,['Death Ward','Vitriolic Sphere']],[15,['Tasha’s Bubbling Cauldron']],[17,['Cloudkill','Raise Dead']]],
+  Armorer:[[3,['Magic Missile','Thunderwave']],[5,['Mirror Image','Shatter']],[9,['Hypnotic Pattern','Lightning Bolt']],[13,['Fire Shield','Greater Invisibility']],[17,['Passwall','Wall of Force']]],
+  Artillerist:[[3,['Shield','Thunderwave']],[5,['Scorching Ray','Shatter']],[9,['Fireball','Wind Wall']],[13,['Ice Storm','Wall of Fire']],[17,['Cone of Cold','Wall of Force']]],
+  'Battle Smith':[[3,['Heroism','Shield']],[5,['Shining Smite','Warding Bond']],[9,['Aura of Vitality','Conjure Barrage']],[13,['Aura of Purity','Fire Shield']],[17,['Banishing Smite','Mass Cure Wounds']]],
+  Cartographer:[[3,['Faerie Fire','Guiding Bolt','Healing Word']],[5,['Locate Object','Mind Spike']],[9,['Call Lightning','Clairvoyance']],[13,['Banishment','Locate Creature']],[17,['Scrying','Teleportation Circle']]],
+  'Knowledge Domain':[[3,['Command','Comprehend Languages','Detect Magic','Detect Thoughts','Identify','Mind Spike']],[5,['Dispel Magic','Nondetection','Tongues']],[7,['Arcane Eye','Banishment','Confusion']],[9,['Legend Lore','Scrying','Synaptic Static']]],
+  'Oath of the Noble Genies':[[3,['Chromatic Orb','Elementalism','Thunderous Smite']],[5,['Mirror Image','Phantasmal Force']],[9,['Fly','Gaseous Form']],[13,['Conjure Minor Elementals','Summon Elemental']],[17,['Banishing Smite','Contact Other Plane']]],
+  'Winter Walker':[[3,['Ice Knife']],[5,['Hold Person']],[9,['Remove Curse']],[13,['Ice Storm']],[17,['Cone of Cold']]],
+  'Spellfire Sorcery':[[3,['Cure Wounds','Guiding Bolt','Lesser Restoration','Scorching Ray']],[5,['Aura of Vitality','Dispel Magic']],[6,['Counterspell']],[7,['Fire Shield','Wall of Fire']],[9,['Greater Restoration','Flame Strike']]],
+  Banneret:[[3,['Comprehend Languages']]],
+  Phantom:[[9,['Augury','Speak with Dead']]],
+  Necromancer:[[3,['Find Familiar']],[6,['Animate Dead']]],
+  Transmuter:[[3,['Alter Self']],[10,['Polymorph']],[14,['Raise Dead']]],
+  'Grave Domain': graveDomainSpells,
+  'College of Glamour': [[3,['Charm Person','Mirror Image']],[6,['Command']]],
+  'College of Spirits': [[3,['Guidance']],[6,['Spirit Guardians']]],
+  'Circle of the Stars': [[3,['Guidance','Guiding Bolt']]],
+  'Circle of the Moon': [[3,['Cure Wounds','Moonbeam','Starry Wisp']],[5,['Conjure Animals']],[7,['Fount of Moonlight']],[9,['Mass Cure Wounds']]],
+  'Circle of the Sea': [[3,['Ray of Frost','Fog Cloud','Thunderwave','Gust of Wind','Shatter']],[5,['Lightning Bolt','Water Breathing']],[7,['Control Water','Ice Storm']],[9,['Conjure Elemental','Hold Monster']]],
+  'Oath of Devotion': [[3,['Protection from Evil and Good','Shield of Faith']],[5,['Aid','Zone of Truth']],[9,['Beacon of Hope','Dispel Magic']],[13,['Freedom of Movement','Guardian of Faith']],[17,['Commune','Flame Strike']]],
+  'Oath of Glory': [[3,['Guiding Bolt','Heroism']],[5,['Enhance Ability','Magic Weapon']],[9,['Haste','Protection from Energy']],[13,['Compulsion','Freedom of Movement']],[17,['Legend Lore','Yolande’s Regal Presence']]],
+  'Oath of the Ancients': [[3,['Ensnaring Strike','Speak with Animals']],[5,['Misty Step','Moonbeam']],[9,['Plant Growth','Protection from Energy']],[13,['Ice Storm','Stoneskin']],[17,['Commune with Nature','Tree Stride']]],
+  'Oath of Vengeance': [[3,['Bane','Hunter’s Mark']],[5,['Hold Person','Misty Step']],[9,['Haste','Protection from Energy']],[13,['Banishment','Dimension Door']],[17,['Hold Monster','Scrying']]],
+  'Warrior of Shadow': [[3,['Minor Illusion','Darkness']]],
+  'Warrior of the Elements': [[3,['Elementalism']]],
+  'Aberrant Sorcery': [[3,['Arms of Hadar','Calm Emotions','Detect Thoughts','Dissonant Whispers','Mind Sliver']],[5,['Hunger of Hadar','Sending']],[7,['Evard’s Black Tentacles','Summon Aberration']],[9,['Rary’s Telepathic Bond','Telekinesis']]],
+  'Clockwork Sorcery': [[3,['Aid','Alarm','Lesser Restoration','Protection from Evil and Good']],[5,['Dispel Magic','Protection from Energy']],[7,['Freedom of Movement','Summon Construct']],[9,['Greater Restoration','Wall of Force']]],
+  'Draconic Sorcery': [[3,['Alter Self','Chromatic Orb','Command','Dragon’s Breath']],[5,['Fear','Fly']],[7,['Arcane Eye','Charm Monster']],[9,['Legend Lore','Summon Dragon']]],
+  'Archfey Patron': [[3,['Calm Emotions','Faerie Fire','Misty Step','Phantasmal Force','Sleep']],[5,['Blink','Plant Growth']],[7,['Dominate Beast','Greater Invisibility']],[9,['Dominate Person','Seeming']]],
+  'Celestial Patron': [[3,['Aid','Cure Wounds','Guiding Bolt','Lesser Restoration','Light','Sacred Flame']],[5,['Daylight','Revivify']],[7,['Guardian of Faith','Wall of Fire']],[9,['Greater Restoration','Summon Celestial']]],
+  'Fiend Patron': [[3,['Burning Hands','Command','Scorching Ray','Suggestion']],[5,['Fireball','Stinking Cloud']],[7,['Fire Shield','Wall of Fire']],[9,['Geas','Insect Plague']]],
+  'Great Old One Patron': [[3,['Detect Thoughts','Dissonant Whispers','Phantasmal Force','Tasha’s Hideous Laughter']],[5,['Clairvoyance','Hunger of Hadar']],[7,['Confusion','Summon Aberration']],[9,['Modify Memory','Telekinesis']],[10,['Hex']]],
+  Abjurer: [[10,['Counterspell','Dispel Magic']]],
+  Illusionist: [[3,['Minor Illusion']],[6,['Summon Beast','Summon Fey']]],
+  'Arcane Trickster': [[3,['Mage Hand']]],
+  'Fey Wanderer': [[3,['Charm Person']],[5,['Misty Step']],[9,['Dispel Magic']],[11,['Summon Fey']],[13,['Dimension Door']],[17,['Mislead']]],
+  'Gloom Stalker': [[3,['Disguise Self']],[5,['Rope Trick']],[9,['Fear']],[13,['Greater Invisibility']],[17,['Seeming']]]
+};
+export const subclassSpellChoices = {
+  'Arcane Archer':[
+    {name:'Druidcraft cantrip',rows:[[3,['Druidcraft']]]},
+    {name:'Prestidigitation cantrip',rows:[[3,['Prestidigitation']]]}
+  ],
+  'Scion of the Three':[
+    {name:'Bane — psychic resistance',rows:[[3,['Minor Illusion']]]},
+    {name:'Bhaal — poison resistance',rows:[[3,['Blade Ward']]]},
+    {name:'Myrkul — necrotic resistance',rows:[[3,['Chill Touch']]]}
+  ],
+  'Circle of the Land': [
+    {name:'Arid land',rows:[[3,['Blur','Burning Hands','Fire Bolt']],[5,['Fireball']],[7,['Blight']],[9,['Wall of Stone']]]},
+    {name:'Polar land',rows:[[3,['Fog Cloud','Hold Person','Ray of Frost']],[5,['Sleet Storm']],[7,['Ice Storm']],[9,['Cone of Cold']]]},
+    {name:'Temperate land',rows:[[3,['Misty Step','Shocking Grasp','Sleep']],[5,['Lightning Bolt']],[7,['Freedom of Movement']],[9,['Tree Stride']]]},
+    {name:'Tropical land',rows:[[3,['Acid Splash','Ray of Sickness','Web']],[5,['Stinking Cloud']],[7,['Polymorph']],[9,['Insect Plague']]]}
+  ],
+  'Vestige Patron': ['Life Domain','Light Domain','Trickery Domain','War Domain'].map(name=>({name,rows:clericDomains[name]}))
+};
+export const subclassSpellcasting = {
+  'Arcane Archer':'Choose Druidcraft or Prestidigitation. Arcane Shot is a separate ammunition feature, not spellcasting or a spell-slot pool.',
+  'Scion of the Three':'Choose one Dread Allegiance; it grants the associated resistance and cantrip. These are alternatives, not three simultaneous grants.',
+  'Eldritch Knight':'Choose Wizard spells using Intelligence. First access to spell levels: 1 at Fighter 3, 2 at 7, 3 at 13, and 4 at 19. These are selected spells, not a fixed bonus spell list.',
+  'Arcane Trickster':'Choose Wizard spells using Intelligence, with Mage Hand granted. First access to spell levels: 1 at Rogue 3, 2 at 7, 3 at 13, and 4 at 19. Other spells are your choices.',
+  'Warrior of Mystic Arts':'Choose Sorcerer-list spells using Wisdom. First access to spell levels: 1 at Monk 3, 2 at 7, 3 at 13, and 4 at 19. At level 6, exchange a spell slot for Focus equal to its level. After a Short Rest or with Uncanny Metabolism, recover one spent slot with Focus: level 1 costs 2, level 2 costs 3, level 3 costs 5, level 4 costs 6; respect the spell-level unlocks.',
+  'College of Lore':'At level 6 choose two Cleric, Druid, or Wizard spells of a level you can cast. These are choices, not automatically granted named spells.',
+  'College of the Moon':'Primal Lore grants a Druid cantrip of your choice. Moonbeam arrives at level 6.',
+  'Arcana Domain':'Choose Wizard cantrips at level 3. Magical Mastery adds chosen high-level Wizard spells at level 17; consult the guide for each spell-level restriction.'
+};
+export const subclassSpellNotes = {
+  'Path of the Wild Heart':'These spells are available only as Rituals. Rage prevents spellcasting and Concentration.',
+  'Psi Warrior':'Telekinesis is prepared with a free feature casting. After using it, spend a Psionic Energy Die to restore that casting or wait for a Long Rest.',
+  Banneret:'Comprehend Languages is available only as a Ritual; this does not grant normal spell slots.',
+  Phantom:'Augury consumes a soul trinket. Speak with Dead is a limited feature casting that refreshes on a Short or Long Rest; neither grants normal spell slots.',
+  Necromancer:'Find Familiar is added to your spellbook, not automatically prepared. Animate Dead is always prepared and has a free casting and subclass enhancements.',
+  Transmuter:'Alter Self and Polymorph are always prepared with free castings. Raise Dead is a Master Transmuter option that consumes your stone unless you pay its alternative spell-slot cost.',
+  Alchemist:'The level 9 Lesser Restoration and level 15 Tasha’s Bubbling Cauldron entries are limited feature castings, not additional always-prepared spells. Other entries are always prepared.',
+  'Circle of the Land':'Choose one land after a Long Rest; its spells are prepared. The four lists are alternatives, not cumulative grants.',
+  'Vestige Patron':'Choose one companion-associated list. The four domain lists are alternatives, not cumulative grants.',
+  'Warrior of Shadow':'Minor Illusion is a cantrip; Darkness uses Focus through Shadow Arts. This does not grant normal spell slots.',
+  'Warrior of the Elements':'Elementalism is a granted cantrip. This does not grant normal spell slots.',
+  Illusionist:'Summon Beast and Summon Fey are prepared; their free illusory castings have reduced hit points.',
+  'Arcane Trickster':'Mage Hand is granted; choose the rest of your spells through the subclass’s Spellcasting feature.',
+  'College of the Moon':'Moonbeam is always prepared; its subclass enhancement can heal allies.',
+  'Fey Wanderer':'Bonus spells are prepared; Fey Reinforcements adds Summon Fey at level 11.'
+};
+
+Object.assign(spellNotes, {
+  'Beast Sense':'Perceive through a willing beast’s senses while maintaining Concentration.',
+  'Healing Word':'Restore a small amount of hit points at range as a Bonus Action.',
+  Augury:'Ask for an omen about the likely result of a near-future course of action.',
+  'Find Familiar':'Call a small magical companion for scouting and assistance; its normal form cannot attack.',
+  Druidcraft:'Create small natural signs and harmless effects, including a local weather prediction.',
+  Prestidigitation:'Perform minor magical tricks, cleaning, sensory effects, and other everyday utility.',
+  'Blade Ward':'Concentrate on a ward that reduces incoming attack rolls.',
+  'Chill Touch':'Deal necrotic damage through touch and briefly prevent the target from regaining hit points.',
+  Guidance:'Help a creature with checks using one chosen skill.',
+  Command:'Give a brief magical order that a creature follows if it fails its save.',
+  'Minor Illusion':'Create a small sound or still image; useful distractions depend on what observers believe.',
+  Elementalism:'Produce small harmless elemental effects for everyday utility.',
+  'Arms of Hadar':'Damage nearby enemies with shadowy tendrils and hinder their reactions.',
+  'Calm Emotions':'Suppress strong emotions or make hostile humanoids temporarily indifferent.',
+  'Detect Thoughts':'Read surface thoughts and probe deeper at the risk of alerting the target.',
+  'Mind Sliver':'Deal psychic damage and weaken the target’s next saving throw.',
+  Sending:'Send a short message over a great distance and receive a short reply.',
+  'Evard’s Black Tentacles':'Fill an area with tentacles that restrain and injure creatures.',
+  'Summon Aberration':'Call an aberrant spirit; choose a form suited to the fight.',
+  'Rary’s Telepathic Bond':'Connect willing creatures for silent communication.',
+  Alarm:'Ward an area so that an intrusion alerts you.',
+  'Protection from Evil and Good':'Protect a creature against attacks and influence from specified supernatural creature types.',
+  'Protection from Energy':'Give a creature resistance to one chosen elemental damage type.',
+  'Summon Construct':'Call a construct spirit with a chosen combat form.',
+  'Chromatic Orb':'Hurl an orb of a chosen elemental damage type; favorable damage dice can make it leap.',
+  'Dragon’s Breath':'Let a creature repeatedly exhale a cone of elemental damage.',
+  Fear:'Frighten creatures in a cone and drive them away.',
+  Fly:'Give a creature a flying speed while you maintain Concentration.',
+  'Charm Monster':'Charm a creature without the humanoid restriction of Charm Person.',
+  'Legend Lore':'Learn significant lore about a legendary person, place, or object.',
+  'Summon Dragon':'Call a dragon spirit to fight beside you.',
+  Sleep:'Drowse creatures in a small area; a later failed save can leave them unconscious.',
+  Blink:'Periodically slip into the Ethereal Plane, then return nearby.',
+  'Plant Growth':'Thicken plants to obstruct movement, or enrich land for agriculture.',
+  Seeming:'Disguise the appearances of several creatures at once.',
+  Light:'Make an object shine with magical light.',
+  'Sacred Flame':'Strike a creature with radiant damage if it fails its Dexterity save.',
+  'Guardian of Faith':'Place a stationary spectral guardian that damages approaching enemies.',
+  'Summon Celestial':'Call a celestial spirit with protective or offensive capabilities.',
+  'Stinking Cloud':'Create a nauseating cloud that disrupts creatures inside.',
+  Geas:'Impose a lasting magical command with consequences for disobedience.',
+  'Insect Plague':'Fill an area with biting insects that hinder movement and deal damage.',
+  'Tasha’s Hideous Laughter':'Overcome a creature with laughter, leaving it prone and incapacitated while the effect lasts.',
+  Clairvoyance:'Create a remote sensor that lets you see or hear at a chosen location.',
+  'Summon Beast':'Call a bestial spirit in a form suited to land, air, or water.',
+  'Summon Fey':'Call a fey spirit that teleports and brings a chosen magical trick.',
+  'Mage Hand':'Move a small spectral hand to manipulate unattended objects at a distance.',
+  Mislead:'Turn invisible while an illusory double draws attention elsewhere.',
+  'Rope Trick':'Create a temporary extradimensional hiding place above a rope.',
+  Blur:'Distort your outline so that creatures have trouble hitting you.',
+  'Fire Bolt':'Make a ranged spell attack that deals fire damage.',
+  'Fog Cloud':'Create a heavily obscured area that blocks ordinary vision.',
+  'Hold Person':'Paralyze a humanoid that fails its Wisdom save.',
+  'Ray of Frost':'Deal cold damage and briefly reduce a creature’s speed.',
+  'Sleet Storm':'Create an icy, obscured area that disrupts footing and Concentration.',
+  'Ice Storm':'Strike an area with hail and leave difficult terrain.',
+  'Cone of Cold':'Blast a wide cone with cold damage.',
+  'Shocking Grasp':'Deliver lightning through touch and hinder the target’s opportunity attacks.',
+  'Tree Stride':'Step into a living tree and emerge from a nearby tree of the same kind.',
+  'Acid Splash':'Splash a small area with acid, testing creatures’ Dexterity saves.',
+  'Fount of Moonlight':'Surround yourself with moonlight that empowers close attacks and can blind an attacker.',
+  'Gust of Wind':'Create a strong line of wind that pushes creatures and disperses gases.',
+  'Water Breathing':'Let willing creatures breathe underwater for an extended period.',
+  'Control Water':'Reshape a substantial body of water using several possible effects.',
+  'Conjure Elemental':'Create an elemental hazard that seizes and damages creatures; it is not a freely commanded pet.',
+  'Zone of Truth':'Create an area where creatures that fail a save cannot knowingly lie.',
+  'Beacon of Hope':'Improve allies’ Wisdom and death saves and maximize healing they receive.',
+  Commune:'Ask your deity or divine representative a few questions.',
+  Heroism:'Protect a creature against fear and provide recurring temporary hit points.',
+  Compulsion:'Magically direct affected creatures’ movement.',
+  'Yolande’s Regal Presence':'Surround yourself with an imposing aura that punishes and displaces approaching enemies.',
+  'Ensnaring Strike':'Cause a weapon hit to sprout restraining vines.',
+  'Speak with Animals':'Communicate with beasts; their knowledge depends on their experience.',
+  Stoneskin:'Give a creature resistance to bludgeoning, piercing, and slashing damage.',
+  'Commune with Nature':'Learn useful facts about the surrounding natural environment.',
+  'Conjure Animals':'Create a mobile animal-spirit pack that damages enemies; the 2024 spell does not summon separately controlled beasts.',
+  'Lesser Restoration':'End one eligible condition, such as Blinded, Deafened, Paralyzed, or Poisoned.',
+  'Aura of Vitality':'Maintain a healing aura that restores hit points over time.'
+});
+
+// Exact catalog aliases preserve existing saved names.
+subclassSpellcasting["Warrior of the Mystic Arts"] = subclassSpellcasting["Warrior of Mystic Arts"];
+
+// The three tables share exactly these prepared-spell and slot counts in their 2024 sources.
+const thirdCasterRows = [
+  [3,3,2,0,0,0],[4,4,3,0,0,0],[5,4,3,0,0,0],[6,4,3,0,0,0],
+  [7,5,4,2,0,0],[8,6,4,2,0,0],[9,6,4,2,0,0],[10,7,4,3,0,0],
+  [11,8,4,3,0,0],[12,8,4,3,0,0],[13,9,4,3,2,0],[14,10,4,3,2,0],
+  [15,10,4,3,2,0],[16,11,4,3,3,0],[17,11,4,3,3,0],[18,11,4,3,3,0],
+  [19,12,4,3,3,1],[20,13,4,3,3,1]
+];
+export const subclassCastingProgression = Object.fromEntries([
+  ['Eldritch Knight','Wizard','Intelligence','fighter:eldritch-knight',2],
+  ['Arcane Trickster','Wizard','Intelligence','rogue:arcane-trickster',3],
+  ['Warrior of the Mystic Arts','Sorcerer','Wisdom','monk:warrior-of-the-mystic-arts',2]
+].map(([name,classList,ability,slug,initialCantrips])=>[name,{
+  classList,
+  source:`https://dnd2024.wikidot.com/${slug}`,
+  note:`Choose ${classList} spells using ${ability}. Slots return on a Long Rest. The prepared-spell counts below exclude any separately granted spells. ${name === 'Arcane Trickster' ? 'The cantrip count includes Mage Hand.' : 'Choose your cantrips from the same class list.'}`,
+  levels:thirdCasterRows.map(([level,prepared,...slots])=>({
+    level, prepared, slots,
+    cantrips:initialCantrips + (level >= 10 ? 1 : 0),
+    spellRank:slots.filter(Boolean).length,
+    newSpellRank:[3,7,13,19].includes(level) ? slots.filter(Boolean).length : null,
+    spellcasting:`${initialCantrips + (level >= 10 ? 1 : 0)} cantrips · ${prepared} prepared spells · Slots: ${slots.flatMap((count,i)=>count ? [`${count} × level ${i+1}`] : []).join(', ')}`
+  }))
+}]));
+
+// Edition-specific supplements for details omitted by the preferred guide.
+export const subclassSecondarySources = {
+  'Path of the Wild Heart':'https://dnd2024.wikidot.com/barbarian:path-of-the-wild-heart',
+  'Psi Warrior':'https://dnd2024.wikidot.com/fighter:psi-warrior',
+  'Eldritch Knight':'https://dnd2024.wikidot.com/fighter:eldritch-knight',
+  'Arcane Trickster':'https://dnd2024.wikidot.com/rogue:arcane-trickster',
+  'Warrior of the Mystic Arts':'https://dnd2024.wikidot.com/monk:warrior-of-the-mystic-arts',
+  Alchemist:'https://dnd2024.wikidot.com/artificer:alchemist',
+  Armorer:'https://dnd2024.wikidot.com/artificer:armorer',
+  Artillerist:'https://dnd2024.wikidot.com/artificer:artillerist',
+  'Battle Smith':'https://dnd2024.wikidot.com/artificer:battle-smith',
+  Cartographer:'https://dnd2024.wikidot.com/artificer:cartographer',
+  Reanimator:'https://dnd2024.wikidot.com/artificer:reanimator',
+  'Knowledge Domain':'https://dnd2024.wikidot.com/cleric:knowledge-domain',
+  'Oath of the Noble Genies':'https://dnd2024.wikidot.com/paladin:oath-of-the-noble-genies',
+  'Winter Walker':'https://dnd2024.wikidot.com/ranger:winter-walker',
+  'Spellfire Sorcery':'https://dnd2024.wikidot.com/sorcerer:spellfire-sorcery',
+  Banneret:'https://dnd2024.wikidot.com/fighter:banneret',
+  'Arcane Archer':'https://dnd2024.wikidot.com/fighter:arcane-archer',
+  Phantom:'https://dnd2024.wikidot.com/rogue:phantom',
+  'Scion of the Three':'https://dnd2024.wikidot.com/rogue:scion-of-the-three',
+  Necromancer:'https://dnd2024.wikidot.com/wizard:necromancer',
+  Transmuter:'https://dnd2024.wikidot.com/wizard:transmuter'
+};
+
+export const subclassSources = {
+  "Alchemist": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/alchemist-artificer-dnd-2024/",
+  "Armorer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/armorer-artificer-dnd-2024/",
+  "Artillerist": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/artillerist-artificer-dnd-2024-guide/",
+  "Battle Smith": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/battle-smith-artificer-dnd-2024/",
+  "Cartographer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/cartographer-artificer-dnd-2024/",
+  "Reanimator": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/reanimator-artificer-dnd-2024/",
+  "Path of the Berserker": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/path-of-the-berserker-dnd-2024-guide/",
+  "Path of the Wild Heart": "https://dungeonmister.com/guides/path-of-the-wild-heart-dnd-2024-guide/",
+  "Path of the World Tree": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/path-of-the-world-tree-barbarian-dnd-2024/",
+  "Path of the Zealot": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/path-of-the-zealot-dnd-2024-guide/",
+  "College of Dance": "https://dungeonmister.com/guides/college-of-dance-bard-dnd-2024-guide/",
+  "College of Glamour": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/college-of-glamour-bard-dnd-2024-guide/",
+  "College of Lore": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/college-of-lore-bard-dnd-2024-guide/",
+  "College of Valor": "https://dungeonmister.com/guides/college-of-valor-bard-dnd-2024-guide/",
+  "College of Spirits": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/college-of-spirits-bard-dnd-2024/",
+  "College of the Moon": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/college-of-the-moon-bard-dnd-2024/",
+  "Life Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/life-domain-cleric-dnd-2024-guide/",
+  "Light Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/light-domain-cleric-dnd-2024-guide/",
+  "Trickery Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/trickery-domain-cleric-dnd-2024/",
+  "War Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/war-domain-cleric-dnd-2024/",
+  "Grave Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/grave-domain-cleric-dnd-2024/",
+  "Arcana Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/arcana-domain-cleric-dnd-2024/",
+  "Knowledge Domain": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/knowledge-domain-cleric-dnd-2024/",
+  "Circle of the Land": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/circle-of-the-land-druid-dnd-2024-guide/",
+  "Circle of the Moon": "https://dungeonmister.com/guides/circle-of-the-moon-druid-dnd-2024-guide/",
+  "Circle of the Sea": "https://dungeonmister.com/guides/circle-of-the-sea-druid-dnd-5e-2024-guide/",
+  "Circle of the Stars": "https://dungeonmister.com/guides/circle-of-stars-druid-dnd-2024-guide/",
+  "Battle Master": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/battle-master-fighter-dnd-2024-guide/",
+  "Champion": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/champion-fighter-dnd-2024-guide/",
+  "Eldritch Knight": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/eldritch-knight-fighter-dnd-2024-guide/",
+  "Psi Warrior": "https://dungeonmister.com/guides/psi-warrior-fighter-dnd-5e-2024-guide/",
+  "Arcane Archer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/arcane-archer-fighter-dnd-2024/",
+  "Banneret": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/banneret-fighter-dnd-2024/",
+  "Warrior of Mercy": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/warrior-of-mercy-monk-dnd-2024-guide/",
+  "Warrior of Shadow": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/shadow-monk-dnd-2024-guide/",
+  "Warrior of the Elements": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/warrior-of-the-elements-dnd-2024-guide/",
+  "Warrior of the Open Hand": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/warrior-of-the-open-hand-monk-dnd-2024/",
+  "Warrior of the Mystic Arts": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/warrior-of-the-mystic-arts-monk-dnd-2024/",
+  "Oath of the Ancients": "https://dungeonmister.com/guides/oath-of-the-ancients-dnd-2024-guide/",
+  "Oath of Devotion": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/oath-of-devotion-paladin-dnd-2024-guide/",
+  "Oath of Glory": "https://dungeonmister.com/guides/oath-of-glory-paladin-dnd-2024-guide/",
+  "Oath of Vengeance": "https://dungeonmister.com/guides/oath-of-vengeance-paladin-dnd-2024-guide/",
+  "Oath of the Noble Genies": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/oath-of-the-noble-genies-dnd-2024/",
+  "Beast Master": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/beast-master-ranger-dnd-2024-guide/",
+  "Fey Wanderer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/fey-wanderer-ranger-dnd-2024-guide/",
+  "Gloom Stalker": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/gloom-stalker-ranger-dnd-2024-guide/",
+  "Hunter": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/hunter-ranger-dnd-2024-guide/",
+  "Hollow Warden": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/hollow-warden-ranger-dnd-2024/",
+  "Winter Walker": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/winter-walker-ranger-dnd-2024/",
+  "Arcane Trickster": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/arcane-trickster-rogue-dnd-2024-guide/",
+  "Assassin": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/assassin-rogue-dnd-2024-guide/",
+  "Soulknife": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/soulknife-rogue-dnd-2024-guide/",
+  "Thief": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/thief-dnd-2024-guide/",
+  "Phantom": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/phantom-rogue-dnd-2024/",
+  "Scion of the Three": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/scion-of-the-three-rogue-dnd-2024/",
+  "Aberrant Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/aberrant-sorcery-sorcerer-dnd-2024/",
+  "Clockwork Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/clockwork-sorcery-sorcerer-dnd-2024/",
+  "Draconic Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/draconic-sorcery-dnd-2024/",
+  "Wild Magic Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/wild-magic-sorcery-dnd-2024-guide/",
+  "Shadow Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/shadow-sorcery-sorcerer-dd-2024-5-5e-subclass-optimisation-guide/",
+  "Spellfire Sorcery": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/spellfire-sorcerer-dnd-2024/",
+  "Archfey Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/archfey-patron-warlock-dnd-2024-guide/",
+  "Celestial Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/celestial-warlock-dnd-2024-guide/",
+  "Fiend Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/fiend-patron-warlock-dnd-2024-guide/",
+  "Great Old One Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/great-old-one-patron-warlock-dnd-2024-guide/",
+  "Undead Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/undead-patron-warlock-dnd-2024/",
+  "Vestige Patron": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/vestige-patron-warlock-dnd-2024/",
+  "Abjurer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/abjurer-wizard-dnd-2024-guide/",
+  "Diviner": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/diviner-wizard-dnd-2024-guide/",
+  "Evoker": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/evoker-wizard-dnd-2024-guide/",
+  "Illusionist": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/illusionist-wizard-dnd-2024-guide/",
+  "Bladesinger": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/bladesinger-wizard-dnd-2024/",
+  "Conjurer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/conjurer-wizard-dnd-2024/",
+  "Enchanter": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/enchanter-wizard-dnd-2024/",
+  "Necromancer": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/necromancer-wizard-dnd-2024/",
+  "Transmuter": "https://dungeonmister.com/guides/classes-in-dungeons-dragons/transmuter-wizard-dnd-2024/"
+};

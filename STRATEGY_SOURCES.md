@@ -1,0 +1,16 @@
+# Play-companion sources
+
+Reviewed 2026-09-29. The sidebar contains original, optional play suggestions; it does not import a published tier list or claim optimization consensus. All 13 classes and 76 catalog subclasses receive advice. Expansion-specific decision and feat ideas reuse the guide-checked `expansionChoices` in `progression.mjs`; core advice is authored around the existing feature timelines. Feat suggestions are optional selections, never subclass grants.
+
+Dungeon Mister remains the project's priority for mechanics and edition selection. Each sidebar links the catalog's individual subclass guide where available, otherwise its class subclass overview or the [2024 discovery index](https://dungeonmister.com/guides/classes-subclasses-in-dnd-2024/). RPGBOT informs the distinction between an optimization perspective and a rule; the sidebar's copy is original advice, not attributed quotations or ratings.
+
+- [RPGBOT: 2024 optimization meta](https://rpgbot.net/2024-dnd/2024-dnd-meta/) is the shared further-reading link. It explicitly discusses 2024 rules and Heroes of Faerûn. Its judgments are one author's perspective.
+- [2024 Artificer guide](https://rpgbot.net/2024-dnd/classes/artificer/) and [subclass guide](https://rpgbot.net/2024-dnd/classes/artificer/artificer-subclasses/) identify Eberron-era options and role specialization. The fetched search excerpt of the subclass guide did not show complete Reanimator coverage, so no claim that it reviews every current option is made.
+- [2024 Bard subclass guide](https://rpgbot.net/2024-dnd/classes/bard/bard-subclasses/) includes discussion of College of Spirits. [Ravenloft Phantom discussion](https://rpgbot.net/openvideo/v/the-phantom-rogue-for-dnd-55-is-back-in-ravenloft-the-horrors-within) establishes expansion discussion exists, not that all Ravenloft subclasses have equally complete written handbooks.
+- [Arcana Unleashed discussion, part 1](https://rpgbot.net/dd-arcana-unleashed-part-1-the-best-arcane-archer-ever-is-still-an-arcane-archer-rpgbot-podcast-s6e113/) and [part 3](https://rpgbot.net/arcana-unleashed-part-3-everything-was-fine-until-tyler-read-the-rules-rpgbot-podcast-s6e116/) cover the newer book in podcast form. This is supplementary discussion, not a verified per-subclass rules database.
+
+## Wikidot comparison and limits
+
+The requested [dnd5e.wikidot.com](https://dnd5e.wikidot.com/) is useful for finding legacy names and identifying edition mismatches. Its indexed [Berserker page](https://dnd5e.wikidot.com/barbarian:berserker) still gives Frenzy an exhaustion cost, whereas this app's Dungeon Mister-based 2024 timeline uses the revised damage feature. Do not import the old exhaustion mechanic. In particular, matching spell or feature names are insufficient evidence that the text matches the 2024 edition.
+
+Search-index excerpts were available for these sources, but direct browser fetches of several pages were rejected by the web tool. This review does not certify every sentence of every external guide. No Wikidot mechanics were imported, and no complete Wikidot-versus-Dungeon-Mister audit is claimed. The offline app needs no live access to these sites; only following a further-reading link requires a connection.

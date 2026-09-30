@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import {classes, species} from './catalog.mjs';
 import {advise, availableClasses, availableSubclasses, classByName, partyCoverage, rankSubclassesAcross} from './advisor.mjs';
 import {detailsFor, expansionChoices, expansionSpells, featLevelsFor, featNotes, spellNotes} from './progression.mjs';
+import {classProgression, classSpellDetails} from './class-progression.mjs';
+import {strategyFor} from './strategy.mjs';
+import {subclassSpells, subclassSpellChoices, subclassSpellcasting, subclassSources, subclassCastingProgression} from './progression.mjs';
 
 const party = [
   {name:'Chip',className:'Paladin'},
@@ -54,3 +57,58 @@ assert.deepEqual(featLevelsFor('Rogue'),[4,8,10,12,16]);
 assert.deepEqual(featLevelsFor('Wizard'),[4,8,12,16]);
 assert(expansionSpells['Hollow Warden'].find(([level])=>level===17)[1].includes('Steel Wind Strike'));
 console.log('Party advisor checks passed');
+
+// Catalog names are the UI lookup keys, including names that contain "the".
+for (const c of classes) for (const sub of c.subs) {
+  assert(subclassSources[sub[0]]?.startsWith('https://dungeonmister.com/'), `${sub[0]}: direct preferred source`);
+  for (const [level, names] of subclassSpells[sub[0]] || []) {
+    assert(Number.isInteger(level) && level >= 1 && level <= 20, `${sub[0]}: grant level`);
+    assert(names.every(name => spellNotes[name]), `${sub[0]}: every named grant has a tooltip`);
+  }
+  for (const choice of subclassSpellChoices[sub[0]] || []) {
+    assert(choice.name && choice.rows.every(([level,names]) => level >= 1 && names.every(name => spellNotes[name])), `${sub[0]}: alternative spell list`);
+  }
+}
+for (const name of ['Oath of Devotion','Oath of Glory','Oath of the Ancients','Oath of Vengeance','Circle of the Moon','Circle of the Sea']) {
+  assert(subclassSpells[name]?.length >= 4, `${name}: complete core bonus-spell levels`);
+}
+assert.equal(subclassSpellChoices['Circle of the Land'].length, 4);
+assert.equal(subclassSpellChoices['Vestige Patron'].length, 4);
+assert(subclassSpellcasting['Warrior of the Mystic Arts']);
+for(const name of ['Eldritch Knight','Arcane Trickster','Warrior of the Mystic Arts']) {
+  const casting = subclassCastingProgression[name];
+  assert.equal(casting.levels.length,18);
+  assert.deepEqual(casting.levels.filter(row=>row.newSpellRank).map(row=>row.level),[3,7,13,19]);
+  assert.deepEqual(casting.levels[0].slots,[2,0,0,0]);
+  assert.deepEqual(casting.levels.at(-1).slots,[4,3,3,1]);
+  assert.equal(casting.levels.at(-1).prepared,13);
+}
+assert.equal(subclassCastingProgression['Arcane Trickster'].levels[0].cantrips,3);
+assert.equal(subclassCastingProgression['Warrior of the Mystic Arts'].classList,'Sorcerer');
+assert.equal(detailsFor('Wizard','Abjurer').find(row=>row[1]==='Spell Breaker')[0],10);
+assert.equal(detailsFor('Ranger','Gloom Stalker').find(row=>row[1]==='Iron Mind')[0],7);
+assert(detailsFor('Bard','College of Dance').find(row=>row[0]===14)[1].includes('Evasion'));
+console.log('Subclass grants, sources, and corrected 2024 milestones passed');
+
+for (const c of classes) {
+  const shared = classProgression[c.name];
+  assert(shared?.source?.startsWith('https://dungeonmister.com/'), `${c.name}: missing preferred class source`);
+  assert.deepEqual(shared.levels.map(row => row.level), Array.from({length:20}, (_,i) => i + 1), `${c.name}: incomplete shared progression`);
+  assert(shared.levels.every(row => row.features.every(feature => feature.name && feature.description)), `${c.name}: incomplete feature explanation`);
+  for (const group of shared.spellList || []) {
+    assert(group.level >= 1 && group.level <= 20, `${c.name}: invalid spell unlock`);
+    for (const name of group.names) {
+      const detail = classSpellDetails[name];
+      assert(detail?.source && detail.rank === group.rank, `${name}: missing or mismatched spell metadata`);
+      assert([...options.books,'D&D Beyond Drops'].includes(detail.book), `${name}: unknown book key ${detail.book}`);
+    }
+  }
+  const advice = strategyFor(c.name);
+  assert(advice.summary && advice.tips.length >= 2 && advice.sources.length, `${c.name}: missing class advice`);
+  for (const sub of c.subs) {
+    const pathAdvice = strategyFor(c.name, sub[0]);
+    assert(pathAdvice.tips.length >= 2 && pathAdvice.summary.includes(sub[0]), `${sub[0]}: missing companion`);
+    assert.notDeepEqual(pathAdvice.tips, advice.tips, `${sub[0]}: no path-specific advice`);
+  }
+}
+console.log('All 13 class references and 76 play companions passed');

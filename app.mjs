@@ -1,9 +1,16 @@
 import {classes, species, guide, roleNames} from './catalog.mjs';
 import {advise, availableClasses, availableSubclasses, bookForClass, bookForSubclass, classByName, rankSubclassesAcross} from './advisor.mjs';
-import {clericDomains, clericSpellPlan, detailsFor, expansionChoices, expansionSpells, featLevelsFor, featNotes, graveDomainSpells, spellNotes, spellPlans as curatedSpellPlans, subclassGuideLinks} from './progression.mjs';
+import {clericSpellPlan, detailsFor, expansionChoices, featNotes, spellNotes, spellPlans as curatedSpellPlans, subclassGuideLinks, subclassSources, subclassSecondarySources, subclassSpells, subclassSpellChoices, subclassSpellcasting, subclassCastingProgression, subclassSpellNotes} from './progression.mjs';
+import {classProgression, classSpellDetails} from './class-progression.mjs';
+import {strategyFor} from './strategy.mjs';
+import {spellGlossary} from './spell-glossary.mjs';
 
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const spellKey = name => String(name).normalize('NFKC').replace(/[’‘]/g,"'").trim().toLocaleLowerCase();
+const spellNotesByKey = new Map([...Object.entries(spellNotes),...Object.entries(spellGlossary)].map(([name,note]) => [spellKey(name),note]));
+const spellDetailsByKey = new Map(Object.entries(classSpellDetails).map(([name,detail]) => [spellKey(name),detail]));
+const spellBookFor = name => spellDetailsByKey.get(spellKey(name))?.book || 'PHB';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || min));
 const option = (value, selected, label = value) => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(label)}</option>`;
 const emptyMember = i => ({name:`Adventurer ${i}`, className:'', subclass:'', species:'', possible:[]});
@@ -35,7 +42,7 @@ function loadState() {
   state.members = Array.isArray(saved.members) && saved.members.length >= 2 && saved.members.length <= 8 ? saved.members.map(cleanMember) : structuredClone(initial.members);
   state.reserve = Array.isArray(saved.reserve) ? saved.reserve.slice(0,7).map(cleanMember) : [];
   state.level = clamp(state.level || 3,1,20);
-  state.books = ['PHB', ...['Eberron','Ravenloft','Heroes of Faerun','Arcana Unleashed'].filter(book => state.books?.includes(book) || (!saved.catalogVersion && ['Heroes of Faerun','Arcana Unleashed'].includes(book)))];
+  state.books = ['PHB', ...['Eberron','Ravenloft','Heroes of Faerun','Arcana Unleashed','D&D Beyond Drops'].filter(book => state.books?.includes(book) || (!saved.catalogVersion && ['Heroes of Faerun','Arcana Unleashed'].includes(book)))];
   state.priority = ['monk','support','magic','control','open'].includes(state.priority) ? state.priority : 'monk';
   state.selectedClass = availableClasses(state.books).find(c => c.name === state.selectedClass)?.name || '';
   state.selectedSubclass = availableSubclasses(classByName(state.selectedClass) || {subs:[]},state.books).some(sub => sub[0] === state.selectedSubclass) ? state.selectedSubclass : '';
@@ -84,17 +91,18 @@ function renderMembers() {
 }
 
 function renderBooks() {
-  $('book-toggles').innerHTML = [['Eberron','Artificer'],['Ravenloft','Grave Domain'],['Heroes of Faerun','Bladesinger'],['Arcana Unleashed','Necromancer']].map(([book,example]) => `<label><input type="checkbox" value="${book}" ${state.books.includes(book)?'checked':''}> ${book}<span>${example}</span></label>`).join('');
+  $('book-toggles').innerHTML = [['Eberron','Artificer'],['Ravenloft','Grave Domain'],['Heroes of Faerun','Bladesinger'],['Arcana Unleashed','Necromancer'],['D&D Beyond Drops','DM review · 2026 spells']].map(([book,example]) => `<label><input type="checkbox" value="${book}" ${state.books.includes(book)?'checked':''}> ${book}<span>${example}</span></label>`).join('');
 }
 
 function classCard(c, item, label = '') {
   const best = rankSubclassesAcross(c,others(),settings())[0];
   const why = best?.reasons?.length ? `${best.sub[0]} can add ${best.reasons[0]}` : item?.reasons?.length ? `Helps with ${item.reasons[0]}` : 'A flexible story choice';
   const badge = `${label || c.kind.toUpperCase()}${bookForClass(c)==='PHB'?'':` · ${bookForClass(c).toUpperCase()} EXPANSION`}`;
-  return `<button type="button" class="class-card" data-class="${escapeHtml(c.name)}"><span class="icon" aria-hidden="true">${c.icon}</span><span class="eyebrow">${escapeHtml(badge)}</span><h3>${c.name}</h3><p>${c.line}</p><span class="fit">${escapeHtml(why)} →</span></button>`;
+  return `<button type="button" class="class-card" data-class="${escapeHtml(c.name)}" aria-pressed="${state.selectedClass === c.name}"><span class="icon" aria-hidden="true">${c.icon}</span><span class="eyebrow">${escapeHtml(badge)}</span><h3>${c.name}</h3><p>${c.line}</p><span class="fit">${escapeHtml(why)} →</span></button>`;
 }
 
 function renderClasses() {
+  renderClassReference();
   const result = advise(others(),settings());
   if (result.tooMany) {
     $('advisor-summary').textContent = 'There are more than 64 possible party combinations. Narrow the uncertain class lists on the party screen to compare them clearly.';
@@ -119,92 +127,88 @@ function renderClasses() {
   $('browse-all').innerHTML = state.browseAll ? 'Hide class list <span aria-hidden="true">−</span>' : 'Browse every class <span aria-hidden="true">＋</span>';
 }
 
-const laterStrategy = {
-  Artificer:'Choose whether your inventions cover protection, utility, or pressure, then coordinate that role with the party.',
-  Barbarian:'Decide which threats you will hold in place and which enemies need your full attention.',
-  Bard:'Build a dependable mix of inspiration, recovery, and control that your teammates can plan around.',
-  Cleric:'Prepare for the threats your party struggles to answer, while keeping recovery ready for emergencies.',
-  Druid:'Choose when to spend your magic on recovery, controlling space, or exploration.',
-  Fighter:'Pick a clear combat job—protect, control, or focus damage—and choose later options around it.',
-  Monk:'Spend Focus where movement, disruption, or support will change the outcome most.',
-  Paladin:'Balance your place on the front line with the moments your party needs protection or recovery.',
-  Ranger:'Use your scouting and positioning to set up safer fights and cover exploration gaps.',
-  Rogue:'Lean into the skills and positioning that make your party more capable between fights.',
-  Sorcerer:'Choose a small set of spells that answers the party’s biggest gaps and use them deliberately.',
-  Warlock:'Shape your pact choices around the job your party needs you to repeat reliably.',
-  Wizard:'Keep your spell choices flexible enough to answer problems the rest of the party cannot.'
-};
-const roleStrategy = {
-  healing:'Keep a recovery option available for emergencies while contributing on turns when everyone is safe.',
-  control:'Look for ways to limit enemy movement or choices before the party takes heavy damage.',
-  frontline:'Take positions that protect allies and force enemies to deal with you.',
-  scouting:'Give your party useful information before a fight or difficult conversation begins.',
-  arcane:'Choose magic that answers problems the other characters cannot solve.',
-  support:'Make your help predictable so teammates can plan their turns around it.',
-  social:'Use your voice to open paths the party cannot win by fighting.'
-};
-const lateRoleStrategy = {
-  healing:'Keep emergency recovery in your plan as threats become more dangerous.',
-  control:'Coordinate your control with teammates who can capitalize on it.',
-  frontline:'Choose later options that keep you effective when enemies hit harder.',
-  scouting:'Turn what you learn ahead of the party into safer choices for everyone.',
-  arcane:'Keep a magical answer ready for problems your party cannot solve with weapons.',
-  support:'Make your best support option dependable across a long adventuring day.',
-  social:'Use your growing influence to create options before combat starts.'
-};
+function spellList(names) {
+  return `<div class="spell-list">${names.map(name => {
+    const detail = spellDetailsByKey.get(spellKey(name));
+    const metadata = detail ? [detail.rank === 0 ? 'Cantrip' : `Level ${detail.rank} spell`, detail.school, detail.concentration ? 'Concentration' : '', detail.ritual ? 'Ritual' : '', detail.book && detail.book !== 'PHB' ? `Expansion: ${detail.bookLabel || detail.book}` : ''].filter(Boolean).join(' · ') : '';
+    const bookTag = detail?.book && detail.book !== 'PHB' ? `<small class="spell-book">${escapeHtml({'Arcana Unleashed':'AU','Heroes of Faerun':'HoF'}[detail.book] || detail.book)}</small>` : '';
+    const explanation = spellNotesByKey.get(spellKey(name)) || detail?.summary || 'See the spell rules for its full effect.';
+    return `<details class="spell-tip" data-spell-name="${escapeHtml(name)}"><summary>${escapeHtml(name)}${bookTag}</summary><span class="spell-description">${metadata ? `<span class="spell-metadata">${escapeHtml(metadata)}</span>` : ''}${escapeHtml(explanation)} ${detail?.source ? `<a href="${escapeHtml(detail.source)}" target="_blank" rel="noopener noreferrer">Spell rules ↗</a>` : ''}</span></details>`;
+  }).join('')}</div>`;
+}
+
+function spellRows(rows, label) {
+  return `<ol class="level-plan spell-plan">${rows.map(([level,names]) => `<li class="${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><strong>Level ${level} · ${escapeHtml(label)}</strong>${spellList(names)}</div></li>`).join('')}</ol>`;
+}
+
+function renderCompanion(id, c, sub) {
+  const advice = strategyFor(c.name, sub?.[0]);
+  const choices = sub && expansionChoices[sub[0]];
+  const milestones = sub ? detailsFor(c.name, sub[0]) : [];
+  const next = milestones.find(([level]) => level > state.level);
+  $(id).innerHTML = `<span class="kicker">YOUR TABLE COMPANION</span><h2 tabindex="-1">${sub ? 'Make this path yours.' : 'Find your rhythm.'}</h2>
+    <p class="companion-label">${escapeHtml(sub?.[0] || c.name)} · Level ${state.level}</p>
+    ${sub && state.level < 3 ? '<p class="choice-note">Your subclass starts at level 3. These are future build ideas.</p>' : ''}
+    <p>${escapeHtml(advice.summary)}</p><ul class="advice-list">${advice.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}</ul>
+    ${next ? `<div class="choice-note"><strong>Next · level ${next[0]}</strong><p>${escapeHtml(next[1])}</p></div>` : ''}
+    ${choices ? `<details class="advice-extra"><summary>Optional feat ideas</summary><p>These are choices, not subclass grants. Check prerequisites and your class’s feat levels.</p>${choices[1].map(name => `<h3>${escapeHtml(name)}</h3><p>${escapeHtml(featNotes[name])}</p>`).join('')}</details>` : ''}
+    <p class="section-note">${escapeHtml(advice.caveat || 'Play suggestions, not rules or a power ranking. Party needs and your table’s style matter.')}</p>
+    <details class="advice-extra"><summary>Advice & sources</summary><ul>${advice.sources.map((source,index) => `<li><a href="${escapeHtml(index === 0 ? (sub ? subclassSources[sub[0]] || source.url : classProgression[c.name].source) : source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label)} ↗</a></li>`).join('')}</ul></details>`;
+}
+
+function renderClassReference() {
+  const c = classByName(state.selectedClass);
+  $('class-reference').hidden = !c;
+  if (!c) return;
+  const data = classProgression[c.name];
+  const spellOptions = (data.spellList || []).map(list => ({...list,names:list.names.filter(name => state.books.includes(spellBookFor(name)))})).filter(list => list.names.length);
+  const ideas = curatedSpellPlans[c.name] || (c.name === 'Cleric' ? clericSpellPlan.map(([level,_label,names]) => [level,names]) : []);
+  $('selected-class').innerHTML = `<header class="path-overview"><span class="kicker">THE SHARED FOUNDATION · ${escapeHtml(bookForClass(c))}</span><h2 id="selected-class-title" tabindex="-1">${escapeHtml(c.name)}</h2><p class="summary">${escapeHtml(c.line)}</p>
+    <p class="section-note">Every ${escapeHtml(c.name)} starts here. Subclass additions live in Your path. Levels below are levels in this class.</p>
+    <ul class="class-basics">${(data.basics || []).map(note => `<li>${escapeHtml(note)}</li>`).join('')}</ul>
+    <a class="source" href="${escapeHtml(data.source)}" target="_blank" rel="noopener noreferrer">Class rules & choices ↗</a>
+    <div class="class-actions"><button type="button" class="primary-button" data-open-path>Explore ${escapeHtml(c.name)} subclasses →</button><button type="button" class="text-button companion-jump" data-companion="class-companion">Play suggestions ↓</button></div></header>
+    <section class="path-section"><span class="kicker">LEVELS 1–20</span><h3>Your class, at every level</h3><p class="section-note">Gold markers are available at your level (${state.level}). Open a feature for a short explanation. Spell slots allow choices from your class spell list; they do not grant named spells.</p>
+    <ol class="level-plan class-levels">${data.levels.map(row => `<li class="${row.level <= state.level ? 'reached' : ''}" ${row.level === state.level ? 'aria-current="step"' : ''}><span class="plan-level">${row.level}</span><div><span class="feature-status">LEVEL ${row.level}${row.level === state.level ? ' · YOU ARE HERE' : ''}</span>
+      ${row.features.length ? row.features.map(feature => `<details class="feature-tip"><summary>${escapeHtml(feature.name)}</summary><p>${escapeHtml(feature.description)}</p></details>`).join('') : '<p class="section-note">Your existing class features continue. Check Your path for subclass gains at this level.</p>'}
+      ${row.spellcasting ? `<p class="spell-progression">${escapeHtml(row.spellcasting)}</p>` : ''}
+      ${row.resources ? `<p class="resource-progression">${escapeHtml(row.resources)}</p>` : ''}
+      ${row.grantedSpells?.length ? `<p class="section-note">Class-feature spell access · the feature above explains any conditions.</p>${spellList(row.grantedSpells)}` : ''}
+      ${spellOptions.filter(list => list.level === row.level).map(list => `<details class="class-spell-ideas"><summary>${list.rank === 0 ? 'Cantrips' : `Level ${list.rank} spells`} · ${list.names.length} class options</summary><p class="section-note">${escapeHtml(data.spellListNote)} Options follow your selected books. This is when this spell level first becomes available; these options remain available at later levels.</p>${spellList(list.names)}</details>`).join('')}
+      ${ideas.some(([level]) => level === row.level) ? `<details class="class-spell-ideas"><summary>Optional spell picks at this level</summary><p class="section-note">Examples to choose or prepare, not automatically granted spells.</p>${spellList(ideas.filter(([level]) => level === row.level).flatMap(([,names]) => names))}</details>` : ''}
+      </div></li>`).join('')}</ol></section>
+    <div class="class-actions"><button type="button" class="primary-button" data-open-path>Choose your subclass →</button></div>`;
+  renderCompanion('class-companion', c);
+}
 
 function renderPath() {
   const c = classByName(state.selectedClass);
   if (!c) return;
-  const result = advise(others(),settings());
-  const classRank = result.ranked.findIndex(item=>item.className === c.name);
-  const classReasons = result.ranked[classRank]?.reasons || [];
   const ranked = rankSubclassesAcross(c,others(),settings());
-  const chosen = ranked.find(item=>item.sub[0] === state.selectedSubclass);
+  const chosen = ranked.find(item => item.sub[0] === state.selectedSubclass);
   const focus = chosen || ranked[0];
-  $('path-subtitle').textContent = `${c.name} · ${c.line}. Choose a path, then explore what it brings to your party.`;
-  $('class-fit').innerHTML = `<span class="advisor-star" aria-hidden="true">✦</span><div><span class="kicker">PARTY FIT</span><p>${c.name === 'Monk' && state.priority === 'monk' ? 'You said Monk sounds fun.' : classRank < 3 ? 'A strong match for your party.' : 'Your choice still has a place in this party.'} ${focus?.reasons.length ? `${escapeHtml(focus.sub[0])} can help with ${escapeHtml(focus.reasons.join(' and '))}.` : classReasons.length ? `It brings ${escapeHtml(classReasons.join(' and '))}.` : 'Choose the style that tells the story you want.'}</p></div>`;
-  $('subclass-grid').innerHTML = ranked.map((item,index) => {
-    const capabilities = Object.entries(item.sub[2] || {}).filter(([,weight])=>weight >= 0.35).map(([role])=>roleNames[role]).filter(Boolean);
-    return `<article class="subclass-card ${focus === item ? 'selected' : ''}"><button type="button" class="subclass-pick" data-subclass="${escapeHtml(item.sub[0])}" aria-pressed="${focus === item}" aria-controls="selected-path"><span class="badge">${index === 0 ? '✦ BEST PARTY FIT' : 'ANOTHER PATH'} · ${escapeHtml(bookForSubclass(c,item.sub))}</span><h3>${escapeHtml(item.sub[0])}</h3><p>${escapeHtml(item.sub[1])}</p><span class="why">${item.reasons.length ? `Helps with ${escapeHtml(item.reasons.join(' & '))}` : 'Follow the story that fits you'}${capabilities.length ? ` · ${escapeHtml(capabilities.join(' / '))}` : ''}</span></button></article>`;
-  }).join('') || '<p>No subclasses from the selected books. Edit the books on the party screen.</p>';
-  $('subclass-select').innerHTML = ranked.map(item=>option(item.sub[0],focus?.sub[0],`${item.sub[0]} · ${bookForSubclass(c,item.sub)}`)).join('');
-  if (!focus) { $('selected-path').innerHTML = '<h2 id="selected-path-title">No available paths</h2><p>Enable this class’s books on the party screen.</p>'; return; }
+  $('path-subtitle').textContent = `${c.name} · Compare what each subclass adds to your shared class foundation.`;
+  $('class-fit').innerHTML = `<span class="advisor-star" aria-hidden="true">✦</span><div><span class="kicker">PARTY FIT</span><p>${focus?.reasons.length ? `${escapeHtml(focus.sub[0])} can help with ${escapeHtml(focus.reasons.join(' and '))}.` : 'Choose the play style that suits your story.'} <button type="button" class="text-button" data-class-reference>Read shared ${escapeHtml(c.name)} features ↗</button></p></div>`;
+  $('subclass-grid').innerHTML = ranked.map((item,index) => `<article class="subclass-card ${focus === item ? 'selected' : ''}"><button type="button" class="subclass-pick" data-subclass="${escapeHtml(item.sub[0])}" aria-pressed="${focus === item}" aria-controls="selected-path"><span class="badge">${index === 0 ? '✦ PARTY FIT' : 'ANOTHER PATH'} · ${escapeHtml(bookForSubclass(c,item.sub))}</span><h3>${escapeHtml(item.sub[0])}</h3><p>${escapeHtml(item.sub[1])}</p></button></article>`).join('');
+  $('subclass-select').innerHTML = ranked.map(item => option(item.sub[0],focus?.sub[0],`${item.sub[0]} · ${bookForSubclass(c,item.sub)}`)).join('');
+  if (!focus) { $('selected-path').innerHTML = '<h2 id="selected-path-title">No available paths</h2><p>Enable this class’s books on the party screen.</p>'; $('path-companion').innerHTML = ''; return; }
   const sub = focus.sub;
-  const source = sub[4] || subclassGuideLinks[c.name] || guide;
-  const current = state.level < 3 ? `At level ${state.level}, practice your ${c.name.toLowerCase()} foundation. ${sub[0]} becomes your subclass at level 3.` : `At level ${state.level}, play into ${sub[1].charAt(0).toLowerCase()+sub[1].slice(1)} Keep your party role in view.`;
-  const focusRole = Object.entries(sub[2] || {}).sort((a,b)=>b[1]-a[1])[0]?.[0] || focus.reasons[0] && Object.keys(roleNames).find(role=>roleNames[role].toLowerCase()===focus.reasons[0]);
-  const middle = `${state.level < 4 ? 'At level 4, review your feat or Ability Score Improvement choice. ' : ''}${roleStrategy[focusRole] || 'Choose later options that make your role in the party more dependable.'}`;
-  const longGame = `${laterStrategy[c.name]} ${lateRoleStrategy[focusRole] || ''}`.trim();
-  const milestones = detailsFor(c.name,sub[0]);
-  const nextMilestone = milestones.find(([level])=>level > state.level);
-  const levelMarkup = milestones.length ? `<ol class="level-plan">${milestones.map(([level,name,description])=>`<li class="${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><span class="feature-status">LEVEL ${level} · ${level <= state.level ? 'AVAILABLE AT YOUR LEVEL' : 'AHEAD'}</span><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p></div></li>`).join('')}</ol>` : '<p>Open the source guide for feature levels and exact rules.</p>';
-  const grantedSpells = expansionSpells[sub[0]] || (c.name === 'Cleric' ? (sub[0] === 'Grave Domain' ? graveDomainSpells : clericDomains[sub[0]]) : null);
-  const thirdCaster = ['Warrior of the Mystic Arts','Eldritch Knight','Arcane Trickster'].includes(sub[0]);
-  const selectedSpells = grantedSpells || (thirdCaster ? [[3,['Shield','Magic Missile']],[7,['Mirror Image']],[13,['Dispel Magic']],[19,['Greater Invisibility']]] : c.name === 'Cleric' ? clericSpellPlan.map(([level,_label,names])=>[level,names]) : (curatedSpellPlans[c.name] || []));
-  const spellRows = selectedSpells.map(([level,names])=>{
-    return `<li class="spell-level ${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><strong>Level ${level} · ${grantedSpells ? 'Subclass spells' : 'Spell ideas'}</strong><div class="spell-list">${names.map(name=>{const note=spellNotes[name] || 'Open your source guide for the full spell rules.';return `<details class="spell-tip"><summary>${escapeHtml(name)}</summary><span class="spell-description">${escapeHtml(note)}</span></details>`;}).join('')}</div></div></li>`;
-  }).join('');
-  const spellMarkup = `<section class="path-section"><span class="kicker">MAGIC & UTILITY</span><h3>${grantedSpells ? 'Spells from your subclass' : 'Spell ideas to consider'}</h3><p class="section-note">${grantedSpells ? 'Subclass-granted spells at each class level. Follow the guide for preparation and casting rules.' : selectedSpells.length ? 'Optional examples, not automatically granted spells or a complete subclass spell list. Check your choices and prerequisites in the guide.' : 'This path centers on features and equipment. Check the guide for any individual cantrips or magical abilities.'}</p>${selectedSpells.length ? `<p class="section-note">Select a spell to read its summary.</p><ol class="level-plan spell-plan">${spellRows}</ol>` : ''}</section>`;
-  const compareMarkup = ranked.length > 1 ? `<details class="compare-subclasses"><summary>Compare all ${ranked.length} paths</summary><div>${ranked.map(item=>`<article><strong>${escapeHtml(item.sub[0])}</strong><p>${escapeHtml(item.sub[1])}</p><span>${detailsFor(c.name,item.sub[0]).map(([level,name])=>`Lv ${level}: ${escapeHtml(name)}`).join(' · ') || 'See linked guide for feature-by-level details.'}</span></article>`).join('')}</div></details>` : '';
-  const choices = expansionChoices[sub[0]];
-  const featLevels = featLevelsFor(c.name);
-  const nextFeat = featLevels.find(level=>level > state.level);
-  $('selected-path').innerHTML = `
-    <header class="path-overview"><span class="kicker">${escapeHtml(c.name.toUpperCase())} · ${escapeHtml(bookForSubclass(c,sub))}${sub[3] ? ' · EXPANSION' : ''}</span>
-      <h2 id="selected-path-title">${escapeHtml(sub[0])}</h2><p class="summary">${escapeHtml(sub[1])}</p>
-      <div class="path-meta"><span>${chosen ? '✓ Selected · saved on this device' : 'Suggested path · choose it to save'}</span><a class="source" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">Read the source guide ↗</a></div>
-      ${chosen ? '' : `<button type="button" class="outline-button save-path" data-save-subclass="${escapeHtml(sub[0])}">Choose this path</button>`}
-      <div class="path-at-a-glance"><div><span class="kicker">YOUR LEVEL</span><strong>${state.level}</strong><span>${state.level < 3 ? 'Subclass begins at level 3' : 'Features through this level are available'}</span></div><div><span class="kicker">NEXT SUBCLASS FEATURE</span><strong>${nextMilestone ? `Level ${nextMilestone[0]}` : 'Full subclass unlocked'}</strong><span>${escapeHtml(nextMilestone?.[1] || 'All listed subclass milestones are available')}</span></div></div>
-    </header>
-    <section class="path-section"><span class="kicker">WHAT YOU GAIN</span><h3>Your features, level by level</h3><p class="section-note">Levels refer to levels in ${escapeHtml(c.name)}, not total levels across multiple classes.</p>${levelMarkup}</section>
-    <section class="path-section"><span class="kicker">BUILD YOUR WAY</span><h3>Choices & feat planning</h3><p>${escapeHtml(choices?.[0] || laterStrategy[c.name])}</p>
-      <div class="choice-note"><strong>Ability scores or a feat</strong><p>Class levels ${featLevels.join(', ')}. ${nextFeat ? `Your next milestone is level ${nextFeat}.` : 'You have reached all these milestones.'} Level 19 adds an Epic Boon feat choice.</p></div>
-      ${choices ? `<div class="choice-note"><strong>Optional feat ideas</strong>${choices[1].map(name=>`<h4>${escapeHtml(name)}</h4><p>${escapeHtml(featNotes[name])}</p>`).join('')}<p class="section-note">PHB examples from this path’s guide, not automatic rewards. Check ability, equipment, and level prerequisites before choosing.</p></div>` : '<p class="section-note">Compare an Ability Score Improvement with feats that support your preferred play style. Check prerequisites in your rulebook.</p>'}
-    </section>
-    ${spellMarkup}
-    <section class="path-section"><span class="kicker">AT THE TABLE</span><h3>How to play this path</h3><div class="timeline"><div class="timeline-item"><strong>NOW · LEVEL ${state.level}</strong><span>${escapeHtml(current)}</span></div><div class="timeline-item"><strong>NEXT CHOICES</strong><span>${escapeHtml(middle)}</span></div><div class="timeline-item"><strong>LATER IN YOUR CAMPAIGN</strong><span>${escapeHtml(longGame)}</span></div></div></section>
-    ${compareMarkup}<p class="section-note">These are short summaries and build suggestions. The linked guide and your DM determine exact rules and allowed books.</p>`;
+  const source = subclassSources[sub[0]] || sub[4] || subclassGuideLinks[c.name] || guide;
+  const milestones = detailsFor(c.name, sub[0]);
+  const grants = subclassSpells[sub[0]] || [];
+  const alternatives = subclassSpellChoices[sub[0]] || [];
+  const spellcasting = subclassSpellcasting[sub[0]];
+  const casting = subclassCastingProgression[sub[0]];
+  const castingMarkup = casting ? `<details class="casting-progression"><summary>Spellcasting level by level</summary><p class="section-note">${escapeHtml(casting.note)}</p><ol class="level-plan">${casting.levels.map(row => `<li class="${row.level <= state.level ? 'reached' : ''}"><span class="plan-level">${row.level}</span><div><strong>Level ${row.level}</strong><p>${escapeHtml(row.spellcasting)}</p>${row.newSpellRank || row.level === 3 ? (classProgression[casting.classList]?.spellList || []).filter(list => list.rank === row.newSpellRank || (row.level === 3 && list.rank === 0)).map(list => {const names=list.names.filter(name => state.books.includes(spellBookFor(name)));return names.length ? `<details class="class-spell-ideas"><summary>${list.rank === 0 ? 'Cantrip choices' : `Level ${list.rank} spell choices`} · ${escapeHtml(casting.classList)} list</summary><p class="section-note">Choose from spells your table allows; these are not automatic grants.</p>${spellList(names)}</details>` : '';}).join('') : ''}</div></li>`).join('')}</ol><a href="${escapeHtml(casting.source)}" target="_blank" rel="noopener noreferrer">Subclass spellcasting table ↗</a></details>` : '';
+  const compare = ranked.length > 1 ? `<details class="compare-subclasses"><summary>Compare all ${ranked.length} paths side by side</summary><div>${ranked.map(item => `<article><strong>${escapeHtml(item.sub[0])}</strong><p>${escapeHtml(item.sub[1])}</p><span>${detailsFor(c.name,item.sub[0]).map(([level,name]) => `Lv ${level}: ${escapeHtml(name)}`).join(' · ')}</span>${subclassSpells[item.sub[0]]?.length ? `<p>Subclass spells</p>${spellList(subclassSpells[item.sub[0]].flatMap(([,names]) => names))}` : ''}</article>`).join('')}</div></details>` : '';
+  $('selected-path').innerHTML = `<header class="path-overview"><span class="kicker">${escapeHtml(c.name.toUpperCase())} · ${escapeHtml(bookForSubclass(c,sub))}${sub[3] ? ' · EXPANSION' : ''}</span><h2 id="selected-path-title" tabindex="-1">${escapeHtml(sub[0])}</h2><p class="summary">${escapeHtml(sub[1])}</p>
+    <div class="path-meta"><span>${chosen ? '✓ Saved as your path' : 'Preview · choose to save'}</span><a class="source" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">Subclass guide ↗</a>${subclassSecondarySources[sub[0]] ? `<a class="source" href="${escapeHtml(subclassSecondarySources[sub[0]])}" target="_blank" rel="noopener noreferrer">2024 rules cross-check ↗</a>` : ''}</div>
+    ${chosen ? '' : `<button type="button" class="outline-button save-path" data-save-subclass="${escapeHtml(sub[0])}">Choose this path</button>`}<button type="button" class="text-button companion-jump" data-companion="path-companion">Play suggestions ↓</button></header>
+    <section class="path-section"><span class="kicker">WHAT THIS PATH ADDS</span><h3>Your subclass features</h3><p class="section-note">Subclass-specific abilities and choices, in addition to your class features. Some spells or proficiencies are also available to other paths; they are not necessarily exclusive.</p>
+    <ol class="level-plan">${milestones.map(([level,name,description]) => `<li class="${level <= state.level ? 'reached' : ''}"><span class="plan-level">${level}</span><div><span class="feature-status">LEVEL ${level} · ${level <= state.level ? 'AVAILABLE' : 'AHEAD'}</span><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p></div></li>`).join('')}</ol></section>
+    ${grants.length || alternatives.length || spellcasting || subclassSpellNotes[sub[0]] ? `<section class="path-section"><span class="kicker">YOUR PATH’S MAGIC</span><h3>Subclass spells & choices</h3><p class="section-note">${escapeHtml(subclassSpellNotes[sub[0]] || 'Spells added by this subclass at each class level. Follow its guide for preparation and casting conditions.')}${grants.length || alternatives.length ? ' Select a spell for its summary.' : ''}</p>${spellcasting ? `<p>${escapeHtml(spellcasting)}</p>` : ''}${spellRows(grants,'Subclass spells')}${alternatives.map(list => `<details class="advice-extra"><summary>${escapeHtml(list.name)}</summary>${spellRows(list.rows,'Choice of spell list')}</details>`).join('')}</section>` : ''}
+    ${castingMarkup}${compare}<p class="section-note">Planning summaries, not a complete character sheet. Shared feats, spell progression, and class features are in the class reference.</p><button type="button" class="outline-button" data-class-reference>Back to ${escapeHtml(c.name)} foundation</button>`;
+  renderCompanion('path-companion', c, sub);
   $('goal').value = state.goal;
 }
 
@@ -225,7 +229,7 @@ function renderScreen() {
   if (screen === 'path') renderPath();
   window.scrollTo({top:0,behavior:'instant'});
 }
-const go = screen => {location.hash = screen; renderScreen();};
+const go = screen => {if (location.hash !== `#${screen}`) history.pushState(null,'',`#${screen}`); if (screen === 'party') renderMembers(); renderScreen();};
 const render = () => {renderMembers();renderBooks();renderScreen();save();};
 
 $('party-size').addEventListener('change', event => {
@@ -275,7 +279,9 @@ for (const id of ['suggested-grid','class-grid']) $(id).addEventListener('click'
   state.selectedClass=button.dataset.class;
   state.members.at(-1).className=state.selectedClass;
   state.members.at(-1).subclass=state.selectedSubclass;
-  save();go('path');
+  save();renderScreen();
+  $('selected-class-title').focus({preventScroll:true});
+  $('class-reference').scrollIntoView({block:'start',behavior:'instant'});
 });
 function chooseSubclass(name) {
   if (!availableSubclasses(classByName(state.selectedClass),state.books).some(sub=>sub[0] === name)) return;
@@ -299,6 +305,16 @@ $('selected-path').addEventListener('click',event=>{
   chooseSubclass(button.dataset.saveSubclass);
   $('selected-path-title').setAttribute('tabindex','-1');
   $('selected-path-title').focus({preventScroll:true});
+});
+document.addEventListener('click', event => {
+  const companion = event.target.closest('[data-companion]');
+  if (companion) {$(companion.dataset.companion).querySelector('h2').focus();}
+  if (event.target.closest('[data-open-path]')) go('path');
+  if (event.target.closest('[data-class-reference]')) {
+    go('classes');
+    $('selected-class-title').focus({preventScroll:true});
+    $('class-reference').scrollIntoView({block:'start',behavior:'instant'});
+  }
 });
 $('goal').addEventListener('input',event=>{state.goal=event.target.value;save();});
 window.addEventListener('hashchange',renderScreen);

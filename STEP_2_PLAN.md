@@ -6,6 +6,14 @@ Help a player enter a party, pick any allowed class and subclass, see a clear pa
 
 ## Current implementation
 
+### Website reference update
+
+The class screen now includes a selected-class reference with all twenty levels and the shared class foundation. The subclass screen is reserved for what each path adds, with a compact selector and a wide reading panel. Both have a play companion: broad class habits first, then subclass-specific choices and tradeoffs. Named spells have click/tap/keyboard explanations. Class spell options, subclass grants, and optional build suggestions remain separate.
+
+Data lives in `class-progression.mjs`, `progression.mjs`, `spell-glossary.mjs`, and `strategy.mjs`. Dungeon Mister takes priority; official 2024 rules fill gaps, edition-checked Wikidot pages supply secondary mechanics, and RPGBOT informs strategy. See source notes for coverage and gaps. Spell options follow allowed-book toggles; D&D Beyond Drops spells have their own DM-review toggle.
+
+Acceptance: `node test.mjs`, `node audit-catalog.mjs`, `node scan-guides.mjs --refresh`, then all-class/all-path browser checks, responsive layout, keyboard spell expansion, saved-state reload and offline operation. Rebuild with `node publish.mjs`. Native packaging is explicitly outside this iteration.
+
 The static app now has separate party, class, and subclass-path screens. It includes 13 classes and all 76 subclasses listed on the Dungeon Mister 2024 index as checked on 2026-09-27, 10 suggested core species with free-text entry for other species, sourcebook toggles for Eberron, Ravenloft, Heroes of Faerun, and Arcana Unleashed, original strategy prompts, and local saving. `catalog.mjs` owns the catalog, `advisor.mjs` owns deterministic scoring and separate uncertain-party scenarios, and `app.mjs` owns UI/state. `audit-catalog.mjs` compares the catalog with the live index. A manifest and service worker cache the app for offline use after first load. Node 24 and npm 11 are available here. Java and `adb` are on PATH; Android Studio and the SDK were not found in their usual Windows locations. The project has no native app or Git repository.
 
 ## Build sequence
